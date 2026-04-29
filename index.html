@@ -1,136 +1,134 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Geleias da Vovó — Artesanal & Natural</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doce Sabor - Geleias Artesanais</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
-  <!-- ========== HERO ========== -->
-  <section class="hero" id="inicio">
-    <div class="hero__bg-grain"></div>
-    <div class="hero__content">
-      <span class="hero__badge">✦ Feito sob encomenda ✦</span>
-      <h1 class="hero__title">Geleias artesanais<br /><em>feitas com frutas<br />selecionadas</em></h1>
-      <p class="hero__sub">Sem conservantes &nbsp;•&nbsp; Produção artesanal &nbsp;•&nbsp; Feito sob encomenda</p>
-      <a href="#produtos" class="btn btn--primary hero__cta">Montar meu pedido</a>
-    </div>
-    <div class="hero__jars" aria-hidden="true">
-      <div class="jar jar--1">🍓</div>
-      <div class="jar jar--2">🥭</div>
-      <div class="jar jar--3">🍑</div>
-    </div>
-  </section>
-
-  <!-- ========== TRUST BAR ========== -->
-  <div class="trust-bar">
-    <span>🌿 100% Natural</span>
-    <span>🏡 Produção Caseira</span>
-    <span>💛 Receita Tradicional</span>
-    <span>📦 Entrega Local</span>
-  </div>
-
-  <!-- ========== KIT DESTAQUE ========== -->
-  <section class="section kit-section" id="kit">
-    <div class="container">
-      <div class="kit-card">
-        <div class="kit-card__badge">⭐ Mais Pedido</div>
-        <div class="kit-card__inner">
-          <div class="kit-card__info">
-            <span class="kit-card__label">Kit Especial</span>
-            <h2 class="kit-card__title">Kit Degustação</h2>
-            <p class="kit-card__desc">Escolha 3 sabores incríveis e experimente o melhor da nossa produção artesanal. Perfeito para presentear ou para descobrir seus favoritos.</p>
-            <ul class="kit-card__features">
-              <li>✦ 3 potes de 250g</li>
-              <li>✦ Sabores à sua escolha</li>
-              <li>✦ Embalagem especial</li>
-            </ul>
-          </div>
-          <div class="kit-card__cta">
-            <div class="kit-card__price">
-              <span class="kit-card__price-from">De R$105</span>
-              <span class="kit-card__price-value">R$ 99</span>
-              <span class="kit-card__price-note">Kit completo</span>
+    <!-- Header Fixo -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-jar"></i>
+                <span>Doce Sabor</span>
             </div>
-            <button class="btn btn--accent" onclick="addToCart('Kit Degustação', 99)">
-              Adicionar ao carrinho
+            <button class="cart-toggle" id="cartToggle">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cartCount">0</span>
             </button>
-          </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </header>
 
-  <!-- ========== PRODUTOS ========== -->
-  <section class="section products-section" id="produtos">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-header__tag">Nossos Sabores</span>
-        <h2 class="section-header__title">Cada pote,<br /><em>uma história</em></h2>
-        <p class="section-header__sub">Potes individuais de 250g — R$35 cada</p>
-      </div>
-      <div class="products-grid" id="products-grid">
-        <!-- Renderizado pelo JS -->
-      </div>
-    </div>
-  </section>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Geleias artesanais feitas com frutas selecionadas</h1>
+            <p class="subtitle">Sem conservantes • Produção artesanal • Feito sob encomenda</p>
+            <a href="#products" class="btn btn-primary">
+                <i class="fas fa-shopping-basket"></i>
+                Montar meu pedido
+            </a>
+        </div>
+        <div class="hero-decoration">
+            <div class="jar-icon"><i class="fas fa-jar"></i></div>
+        </div>
+    </section>
 
-  <!-- ========== SOBRE ========== -->
-  <section class="section about-section">
-    <div class="container about-inner">
-      <div class="about-text">
-        <span class="section-header__tag">Nossa história</span>
-        <h2 class="about-text__title">Tradição que<br /><em>tem sabor</em></h2>
-        <p>Cada geleia é preparada em pequenos lotes com frutas frescas selecionadas. Nada de conservantes, nada de industrializado — apenas o melhor da natureza transformado com carinho.</p>
-        <p>Produzimos sob encomenda para garantir sempre a máxima qualidade e frescor no seu pote.</p>
-      </div>
-      <div class="about-emojis" aria-hidden="true">
-        <div class="about-emoji">🍓</div>
-        <div class="about-emoji">🫙</div>
-        <div class="about-emoji">🌿</div>
-      </div>
-    </div>
-  </section>
+    <!-- Kit Principal -->
+    <section class="kit-section">
+        <div class="container">
+            <div class="kit-card">
+                <div class="kit-badge">Mais Vendido</div>
+                <div class="kit-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h2>Kit Degustação</h2>
+                <p class="kit-description">3 potes de 250g com sabores à sua escolha</p>
+                <ul class="kit-features">
+                    <li><i class="fas fa-check"></i> 3 Sabores diferentes</li>
+                    <li><i class="fas fa-check"></i> Embalagem para presente</li>
+                    <li><i class="fas fa-check"></i> Tag personalizada</li>
+                </ul>
+                <div class="kit-price">
+                    <span class="price">R$ 99</span>
+                    <span class="price-note">à vista</span>
+                </div>
+                <button class="btn btn-secondary" onclick="addKit()">
+                    <i class="fas fa-plus"></i>
+                    Adicionar ao carrinho
+                </button>
+            </div>
+        </div>
+    </section>
 
-  <!-- ========== CARRINHO ========== -->
-  <aside class="cart" id="cart" aria-label="Carrinho de compras">
-    <div class="cart__header">
-      <h3 class="cart__title">🛒 Meu Pedido</h3>
-      <button class="cart__toggle" id="cart-toggle" aria-label="Fechar carrinho">✕</button>
-    </div>
-    <div class="cart__body" id="cart-body">
-      <p class="cart__empty" id="cart-empty">Seu carrinho está vazio.<br />Adicione seus sabores favoritos!</p>
-      <ul class="cart__list" id="cart-list"></ul>
-    </div>
-    <div class="cart__footer" id="cart-footer" style="display:none">
-      <div class="cart__total">
-        <span>Total estimado:</span>
-        <strong id="cart-total">R$ 0</strong>
-      </div>
-      <button class="btn btn--whatsapp" id="whatsapp-btn" onclick="finalizeOrder()">
-        <span>💬</span> Finalizar no WhatsApp
-      </button>
-      <p class="cart__note">* Pedido sujeito à confirmação de disponibilidade</p>
-    </div>
-  </aside>
+    <!-- Produtos -->
+    <section class="products-section" id="products">
+        <div class="container">
+            <h2 class="section-title">Nossos Sabores</h2>
+            <p class="section-subtitle">Escolha suas geleias favoritas - Pote de 250g</p>
+            
+            <div class="products-grid" id="productsGrid">
+                <!-- Produtos inseridos via JavaScript -->
+            </div>
+        </div>
+    </section>
 
-  <!-- ========== FAB CARRINHO ========== -->
-  <button class="cart-fab" id="cart-fab" onclick="toggleCart()" aria-label="Abrir carrinho">
-    🛒
-    <span class="cart-fab__count" id="cart-count">0</span>
-  </button>
+    <!-- Carrinho Lateral -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <aside class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Seu Pedido</h3>
+            <button class="cart-close" id="cartClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <!-- Itens do carrinho inseridos via JavaScript -->
+            <div class="cart-empty">
+                <i class="fas fa-shopping-basket"></i>
+                <p>Seu carrinho está vazio</p>
+            </div>
+        </div>
+        
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span class="total-value" id="cartTotal">R$ 0,00</span>
+            </div>
+            <button class="btn btn-whatsapp" id="checkoutBtn" onclick="finalizarPedido()" disabled>
+                <i class="fab fa-whatsapp"></i>
+                Finalizar pedido no WhatsApp
+            </button>
+        </div>
+    </aside>
 
-  <!-- ========== FOOTER ========== -->
-  <footer class="footer">
-    <p>🍓 Geleias da Vovó — Artesanal com amor</p>
-    <p class="footer__sub">Feito sob encomenda · Produção limitada</p>
-  </footer>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-jar"></i>
+                    <span>Doce Sabor</span>
+                </div>
+                <p class="footer-text">Geleias artesanais feitas com amor e ingredientes selecionados</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Doce Sabor. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
