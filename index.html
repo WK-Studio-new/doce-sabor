@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doce Sabor — Geleias Artesanais</title>
+
+  <!-- Google Fonts: Playfair Display (display) + Lato (corpo) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Lato:wght@300;400;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
+
+  <!-- Folha de estilos externa -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER / NAVBAR
+  ============================================================ -->
+  <header class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a href="#hero" class="navbar__logo">
+        <span class="navbar__logo-script">Doce</span>
+        <span class="navbar__logo-serif">Sabor</span>
+      </a>
+      <nav class="navbar__links">
+        <a href="#beneficios">Benefícios</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#depoimentos">Depoimentos</a>
+        <a href="#cta" class="navbar__cta-btn">Pedir Agora</a>
+      </nav>
+      <!-- Hamburguer mobile -->
+      <button class="navbar__hamburger" id="hamburgerBtn" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <!-- Menu mobile overlay -->
+    <div class="navbar__mobile-menu" id="mobileMenu">
+      <a href="#beneficios" class="mobile-link">Benefícios</a>
+      <a href="#sobre" class="mobile-link">Sobre</a>
+      <a href="#depoimentos" class="mobile-link">Depoimentos</a>
+      <a href="#cta" class="mobile-link mobile-link--cta">Pedir Agora</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============================================================
+         SEÇÃO 1 — HERO
+    ============================================================ -->
+    <section class="hero" id="hero">
+      <!-- Decoração de fundo -->
+      <div class="hero__bg-texture"></div>
+      <div class="hero__bg-circle hero__bg-circle--1"></div>
+      <div class="hero__bg-circle hero__bg-circle--2"></div>
+
+      <div class="hero__content">
+        <!-- Texto -->
+        <div class="hero__text">
+          <span class="hero__eyebrow">✦ Artesanal &amp; com amor ✦</span>
+          <h1 class="hero__title">
+            Geleias Artesanais que Transformam Momentos
+            <em>Simples em Especiais</em>
+          </h1>
+          <p class="hero__subtitle">
+            Feitas com frutas selecionadas, sem conservantes e com muito amor.
+            Cada pote carrega um pedaço do campo diretamente para a sua mesa.
+          </p>
+          <a href="https://wa.me/5561998647768?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido%20de%20geleias%20artesanais%20Doce%20Sabor%20%F0%9F%8D%93"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="btn btn--primary hero__cta"
+             id="heroWhatsappBtn">
+            <svg class="btn__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.847L.057 23.857a.5.5 0 0 0 .609.61l6.098-1.598A11.947 11.947 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.944 9.944 0 0 1-5.176-1.452l-.371-.22-3.845 1.008 1.025-3.739-.242-.385A9.944 9.944 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            Peça Agora pelo WhatsApp
+          </a>
+          <!-- Selos de confiança -->
+          <div class="hero__badges">
+            <span class="badge">🍓 100% Natural</span>
+            <span class="badge">🫙 Feito à Mão</span>
+            <span class="badge">💛 Sem Conservantes</span>
+          </div>
+        </div>
+
+        <!-- Imagem / Visual -->
+        <div class="hero__visual">
+          <div class="hero__jar-wrapper">
+            <!-- Ilustração SVG do pote de geleia -->
+            <svg class="hero__jar-svg" viewBox="0 0 320 380" xmlns="http://www.w3.org/2000/svg" aria-label="Pote de geleia artesanal Doce Sabor">
+              <!-- Sombra -->
+              <ellipse cx="160" cy="368" rx="80" ry="10" fill="#7A1C2E" opacity="0.15"/>
+              <!-- Tampa -->
+              <rect x="80" y="60" width="160" height="22" rx="6" fill="#4a1018"/>
+              <rect x="90" y="48" width="140" height="18" rx="5" fill="#6b1626"/>
+              <rect x="70" y="68" width="180" height="8" rx="3" fill="#3d0d14"/>
+              <!-- Etiqueta na tampa -->
+              <ellipse cx="160" cy="54" rx="55" ry="13" fill="#C9A66B" opacity="0.3"/>
+              <text x="160" y="59" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#F5E6D3" font-style="italic">artesanal</text>
+              <!-- Corpo do pote -->
+              <path d="M88 76 Q72 78 68 130 L62 290 Q60 320 160 325 Q260 320 258 290 L252 130 Q248 78 232 76 Z" fill="#F5E6D3"/>
+              <!-- Geleia dentro do pote (cor vinho) -->
+              <path d="M88 160 Q85 155 82 190 L78 270 Q76 295 160 300 Q244 295 242 270 L238 190 Q235 155 232 160 Z" fill="#7A1C2E" opacity="0.85"/>
+              <!-- Reflexo no vidro -->
+              <path d="M92 80 Q88 120 88 170 Q88 175 95 175 Q102 175 102 170 Q102 120 100 80 Z" fill="white" opacity="0.18"/>
+              <!-- Brilho superior -->
+              <ellipse cx="160" cy="82" rx="60" ry="8" fill="white" opacity="0.12"/>
+              <!-- Etiqueta papel -->
+              <rect x="100" y="115" width="120" height="85" rx="6" fill="#F5E6D3" stroke="#C9A66B" stroke-width="1.5"/>
+              <rect x="104" y="119" width="112" height="77" rx="4" fill="none" stroke="#C9A66B" stroke-width="0.8" stroke-dasharray="3,2"/>
+              <!-- Texto da etiqueta -->
+              <text x="160" y="137" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="#C9A66B" letter-spacing="2">✦ DOCE SABOR ✦</text>
+              <text x="160" y="152" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#7A1C2E" font-weight="bold" font-style="italic">Geleia</text>
+              <text x="160" y="166" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#7A1C2E" font-style="italic">Artesanal</text>
+              <line x1="115" y1="172" x2="205" y2="172" stroke="#C9A66B" stroke-width="0.8"/>
+              <text x="160" y="184" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="#4a1018">de Morango</text>
+              <text x="160" y="194" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#C9A66B">sem conservantes</text>
+              <!-- Frutas decorativas ao redor -->
+              <!-- Morango esquerda -->
+              <g transform="translate(42,100)">
+                <ellipse cx="0" cy="0" rx="18" ry="22" fill="#c0392b" transform="rotate(-15)"/>
+                <path d="M-4,-22 Q0,-28 4,-22" fill="#27ae60" stroke="#1e8449" stroke-width="1"/>
+                <circle cx="-5" cy="-5" r="1.5" fill="#f5b7b1" opacity="0.6"/>
+                <circle cx="3" cy="2" r="1.5" fill="#f5b7b1" opacity="0.6"/>
+                <circle cx="-2" cy="7" r="1.5" fill="#f5b7b1" opacity="0.6"/>
+              </g>
+              <!-- Morango direita -->
+              <g transform="translate(275,115)">
+                <ellipse cx="0" cy="0" rx="16" ry="20" fill="#c0392b" transform="rotate(10)"/>
+                <path d="M-4,-20 Q0,-26 4,-20" fill="#27ae60" stroke="#1e8449" stroke-width="1"/>
+                <circle cx="-4" cy="-3" r="1.2" fill="#f5b7b1" opacity="0.6"/>
+                <circle cx="3" cy="3" r="1.2" fill="#f5b7b1" opacity="0.6"/>
+              </g>
+              <!-- Amoras/mirtilo em cima -->
+              <circle cx="130" cy="45" r="9" fill="#6c3483"/>
+              <circle cx="145" cy="40" r="9" fill="#7d3c98"/>
+              <circle cx="160" cy="38" r="9" fill="#6c3483"/>
+              <circle cx="175" cy="40" r="9" fill="#7d3c98"/>
+              <circle cx="190" cy="45" r="9" fill="#6c3483"/>
+              <!-- Folhinhas -->
+              <g transform="translate(50,240)" opacity="0.7">
+                <ellipse cx="0" cy="0" rx="10" ry="5" fill="#27ae60" transform="rotate(-30)"/>
+                <line x1="0" y1="-5" x2="0" y2="5" stroke="#1e8449" stroke-width="0.8"/>
+              </g>
+              <g transform="translate(268,230)" opacity="0.7">
+                <ellipse cx="0" cy="0" rx="10" ry="5" fill="#27ae60" transform="rotate(30)"/>
+                <line x1="0" y1="-5" x2="0" y2="5" stroke="#1e8449" stroke-width="0.8"/>
+              </g>
+            </svg>
+            <!-- Círculo decorativo atrás -->
+            <div class="hero__jar-glow"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="hero__scroll-hint">
+        <span>Conheça mais</span>
+        <div class="hero__scroll-arrow"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 2 — BENEFÍCIOS
+    ============================================================ -->
+    <section class="benefits" id="beneficios">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-eyebrow">Por que escolher a Doce Sabor?</span>
+          <h2 class="section-title">O melhor da natureza<br/><em>em cada colherada</em></h2>
+        </div>
+        <div class="benefits__grid">
+
+          <article class="benefit-card" data-animate>
+            <div class="benefit-card__icon-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" fill="#7A1C2E" opacity=".12"/><path d="M32 14c0 0-14 10-14 20a14 14 0 0 0 28 0C46 24 32 14 32 14z" fill="#7A1C2E"/><path d="M32 22v18" stroke="#F5E6D3" stroke-width="2" stroke-linecap="round"/><path d="M25 30c3-3 7-3 7 0" stroke="#F5E6D3" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <h3 class="benefit-card__title">Frutas Selecionadas</h3>
+            <p class="benefit-card__text">Escolhemos apenas as melhores frutas, no ponto ideal de maturação, para garantir o sabor mais intenso e autêntico.</p>
+          </article>
+
+          <article class="benefit-card" data-animate>
+            <div class="benefit-card__icon-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" fill="#7A1C2E" opacity=".12"/><path d="M20 32h24M32 20v24" stroke="#7A1C2E" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="10" stroke="#7A1C2E" stroke-width="2"/><path d="M26 26l12 12M38 26L26 38" stroke="#F5E6D3" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h3 class="benefit-card__title">Sem Conservantes</h3>
+            <p class="benefit-card__text">Zero aditivos artificiais. Apenas fruta, açúcar e amor — porque o que é bom de verdade não precisa de química.</p>
+          </article>
+
+          <article class="benefit-card" data-animate>
+            <div class="benefit-card__icon-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" fill="#7A1C2E" opacity=".12"/><path d="M22 42V26l10-12 10 12v16H22z" stroke="#7A1C2E" stroke-width="2" stroke-linejoin="round"/><path d="M28 42v-8h8v8" stroke="#7A1C2E" stroke-width="2"/><circle cx="32" cy="28" r="3" fill="#C9A66B"/></svg>
+            </div>
+            <h3 class="benefit-card__title">Produção Artesanal</h3>
+            <p class="benefit-card__text">Receita de família, feita em pequenos lotes com atenção e cuidado que só a produção caseira pode oferecer.</p>
+          </article>
+
+          <article class="benefit-card" data-animate>
+            <div class="benefit-card__icon-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" fill="#7A1C2E" opacity=".12"/><path d="M20 38c4-8 20-8 24 0" stroke="#7A1C2E" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="27" r="5" stroke="#7A1C2E" stroke-width="2"/><circle cx="40" cy="27" r="5" stroke="#7A1C2E" stroke-width="2"/><path d="M24 27c2-4 10-4 16 0" stroke="#C9A66B" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h3 class="benefit-card__title">Diversos Sabores</h3>
+            <p class="benefit-card__text">Morango, jabuticaba, maracujá, goiaba e muito mais. Um sabor diferente para cada humor e cada momento especial.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 3 — SOBRE O PRODUTO
+    ============================================================ -->
+    <section class="about" id="sobre">
+      <div class="about__bg-decor"></div>
+      <div class="section-container about__inner">
+
+        <!-- Visual decorativo -->
+        <div class="about__visual" data-animate>
+          <div class="about__visual-ring about__visual-ring--outer"></div>
+          <div class="about__visual-ring about__visual-ring--inner"></div>
+          <div class="about__visual-card">
+            <span class="about__visual-number">100%</span>
+            <span class="about__visual-label">Natural</span>
+          </div>
+          <div class="about__visual-card about__visual-card--2">
+            <span class="about__visual-number">♥</span>
+            <span class="about__visual-label">Feito com amor</span>
+          </div>
+          <div class="about__visual-card about__visual-card--3">
+            <span class="about__visual-number">0</span>
+            <span class="about__visual-label">Conservantes</span>
+          </div>
+        </div>
+
+        <!-- Texto -->
+        <div class="about__text" data-animate>
+          <span class="section-eyebrow">Nossa história</span>
+          <h2 class="section-title">Feitas com as mãos,<br/><em>servidas com o coração</em></h2>
+          <p>
+            Cada pote de Doce Sabor nasce de um processo completamente manual, onde cada etapa recebe a atenção que só o cuidado humano pode dar. Nossas receitas foram passadas de geração em geração, aperfeiçoadas com o tempo e o amor de quem acredita que a comida de verdade tem sabor e história.
+          </p>
+          <p>
+            Trabalhamos com ingredientes frescos, adquiridos de pequenos produtores locais, garantindo frescor absoluto e apoiando quem cultiva com respeito à terra. Produzimos em pequenos lotes para que cada geleia mantenha o padrão de qualidade que você merece.
+          </p>
+          <div class="about__pillars">
+            <div class="about__pillar">
+              <span class="about__pillar-icon">🫙</span>
+              <span>Produção manual</span>
+            </div>
+            <div class="about__pillar">
+              <span class="about__pillar-icon">🍃</span>
+              <span>Ingredientes frescos</span>
+            </div>
+            <div class="about__pillar">
+              <span class="about__pillar-icon">🌿</span>
+              <span>Pequenos lotes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 4 — SUGESTÕES DE CONSUMO
+    ============================================================ -->
+    <section class="uses" id="usos">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-eyebrow">Mil e uma formas de saborear</span>
+          <h2 class="section-title">Para cada momento,<br/><em>um jeito diferente de usar</em></h2>
+        </div>
+        <div class="uses__grid">
+
+          <div class="use-card" data-animate>
+            <div class="use-card__emoji">🍞</div>
+            <h3>No Pão</h3>
+            <p>O clássico que nunca sai de moda. Espalhe generosamente no pão fresquinho e comece o dia com alegria.</p>
+          </div>
+
+          <div class="use-card" data-animate>
+            <div class="use-card__emoji">🥛</div>
+            <h3>No Iogurte</h3>
+            <p>Uma colherada de Doce Sabor transforma um iogurte simples em uma sobremesa deliciosa e nutritiva.</p>
+          </div>
+
+          <div class="use-card" data-animate>
+            <div class="use-card__emoji">🍰</div>
+            <h3>Em Sobremesas</h3>
+            <p>Recheie bolos, tortas e pavês. Nossas geleias elevam qualquer sobremesa a um nível profissional.</p>
+          </div>
+
+          <div class="use-card" data-animate>
+            <div class="use-card__emoji">🎁</div>
+            <h3>Para Presentear</h3>
+            <p>Um presente único, feito à mão, cheio de significado. Perfeito para datas especiais e cestas gourmet.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 5 — DEPOIMENTOS
+    ============================================================ -->
+    <section class="testimonials" id="depoimentos">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-eyebrow">O que dizem quem já provou</span>
+          <h2 class="section-title">Feita para ser<br/><em>amada à primeira colher</em></h2>
+        </div>
+
+        <!-- Carrossel de depoimentos -->
+        <div class="testimonials__track-wrapper">
+          <div class="testimonials__track" id="testimonialsTrack">
+
+            <article class="testimonial-card">
+              <div class="testimonial-card__stars">★★★★★</div>
+              <blockquote>"Comprei a geleia de jabuticaba e fiquei completamente apaixonada! É impossível parar de comer. Já fiz pedido três vezes esse mês."</blockquote>
+              <footer>
+                <div class="testimonial-card__avatar">AM</div>
+                <div>
+                  <strong>Ana Martins</strong>
+                  <span>Brasília – DF</span>
+                </div>
+              </footer>
+            </article>
+
+            <article class="testimonial-card">
+              <div class="testimonial-card__stars">★★★★★</div>
+              <blockquote>"Dei de presente para minha mãe no Dia das Mães e ela adorou! Embalagem linda, geleia deliciosa. Vale muito a pena!"</blockquote>
+              <footer>
+                <div class="testimonial-card__avatar">RS</div>
+                <div>
+                  <strong>Ricardo Santos</strong>
+                  <span>Goiânia – GO</span>
+                </div>
+              </footer>
+            </article>
+
+            <article class="testimonial-card">
+              <div class="testimonial-card__stars">★★★★★</div>
+              <blockquote>"Uso nas tortas da minha confeitaria e os clientes adoram! Produto de altíssima qualidade, sabor impecável e entrega super rápida."</blockquote>
+              <footer>
+                <div class="testimonial-card__avatar">CL</div>
+                <div>
+                  <strong>Carla Lima</strong>
+                  <span>São Paulo – SP</span>
+                </div>
+              </footer>
+            </article>
+
+            <article class="testimonial-card">
+              <div class="testimonial-card__stars">★★★★★</div>
+              <blockquote>"A geleia de morango é simplesmente perfeita. Dá para sentir que foi feita com carinho. Não troco mais por nenhuma outra marca!"</blockquote>
+              <footer>
+                <div class="testimonial-card__avatar">FO</div>
+                <div>
+                  <strong>Fernanda Oliveira</strong>
+                  <span>Belo Horizonte – MG</span>
+                </div>
+              </footer>
+            </article>
+
+            <article class="testimonial-card">
+              <div class="testimonial-card__stars">★★★★★</div>
+              <blockquote>"Recebi um kit como presente e me apaixonei! O sabor de maracujá com pimenta é surpreendente. Já indiquei para todos os amigos."</blockquote>
+              <footer>
+                <div class="testimonial-card__avatar">MP</div>
+                <div>
+                  <strong>Marcos Pereira</strong>
+                  <span>Curitiba – PR</span>
+                </div>
+              </footer>
+            </article>
+
+          </div><!-- /.testimonials__track -->
+        </div><!-- /.testimonials__track-wrapper -->
+
+        <!-- Controles do carrossel -->
+        <div class="testimonials__controls">
+          <button class="testimonials__btn testimonials__btn--prev" id="testimonialPrev" aria-label="Depoimento anterior">&#8592;</button>
+          <div class="testimonials__dots" id="testimonialDots"></div>
+          <button class="testimonials__btn testimonials__btn--next" id="testimonialNext" aria-label="Próximo depoimento">&#8594;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 6 — DIFERENCIAL
+    ============================================================ -->
+    <section class="brand-quote" id="diferencial">
+      <div class="brand-quote__inner">
+        <div class="brand-quote__ornament brand-quote__ornament--left">❝</div>
+        <p class="brand-quote__text">
+          Doce Sabor é mais que uma geleia —<br/>
+          <em>é carinho em forma de sabor.</em>
+        </p>
+        <div class="brand-quote__ornament brand-quote__ornament--right">❞</div>
+        <span class="brand-quote__sig">— Doce Sabor Geleias</span>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 7 — CTA FINAL
+    ============================================================ -->
+    <section class="cta-section" id="cta">
+      <div class="cta-section__inner">
+        <span class="section-eyebrow section-eyebrow--light">Pronto para se apaixonar?</span>
+        <h2 class="cta-section__title">Faça seu pedido<br/><em>agora mesmo!</em></h2>
+        <p class="cta-section__subtitle">Atendimento personalizado pelo WhatsApp. Resposta rápida, envio para todo o Brasil.</p>
+        <a href="https://wa.me/5561998647768?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido%20de%20geleias%20artesanais%20Doce%20Sabor%20%F0%9F%8D%93"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="btn btn--primary btn--large"
+           id="ctaWhatsappBtn">
+          <svg class="btn__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.847L.057 23.857a.5.5 0 0 0 .609.61l6.098-1.598A11.947 11.947 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.944 9.944 0 0 1-5.176-1.452l-.371-.22-3.845 1.008 1.025-3.739-.242-.385A9.944 9.944 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          Pedir pelo WhatsApp
+        </a>
+        <p class="cta-section__phone">📱 +55 61 99864-7768</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__logo">
+        <span class="footer__logo-script">Doce</span>
+        <span class="footer__logo-serif">Sabor</span>
+        <p class="footer__tagline">Adoçando seus melhores momentos!</p>
+      </div>
+      <div class="footer__social">
+        <a href="https://instagram.com/doce.sabor.geleias"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="footer__instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          @doce.sabor.geleias
+        </a>
+      </div>
+      <p class="footer__copy">&copy; 2025 Doce Sabor Geleias. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Botão flutuante WhatsApp -->
+  <a href="https://wa.me/5561998647768?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido%20de%20geleias%20artesanais%20Doce%20Sabor%20%F0%9F%8D%93"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="whatsapp-float"
+     id="whatsappFloat"
+     aria-label="Falar no WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="30" height="30"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.847L.057 23.857a.5.5 0 0 0 .609.61l6.098-1.598A11.947 11.947 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.944 9.944 0 0 1-5.176-1.452l-.371-.22-3.845 1.008 1.025-3.739-.242-.385A9.944 9.944 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+    <span class="whatsapp-float__tooltip">Fale conosco!</span>
+  </a>
+
+  <!-- Script externo -->
+  <script src="script.js"></script>
+</body>
+</html>
