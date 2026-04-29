@@ -1,336 +1,492 @@
-/* ========================================
-   DOCE SABOR - Geleias Artesanais
-   Script.js
-   ======================================== */
+// ============================================================
+// CONFIG GLOBAL
+// ============================================================
 
-// ----- Configuração -----
-// Número do WhatsApp
-const WHATSAPP_NUMERO = '5561998647768';
-
-// ----- Dados dos Produtos ----- 
-const produtos = [
-    {
-        id: 'morango',
-        nome: 'Geleia de Morango',
-        descricao: 'Frutas frescas selecionadas',
-        preco: 35,
-        cor: '#c62828',
-        icon: 'fa-strawberry'
-    },
-    {
-        id: 'manga',
-        nome: 'Geleia de Manga',
-        descricao: 'Manga madura e doce',
-        preco: 35,
-        cor: '#e65100',
-        icon: 'fa-lemon'
-    },
-    {
-        id: 'maracuja',
-        nome: 'Geleia de Maracujá',
-        descricao: 'Polpa natural ácida',
-        preco: 35,
-        cor: '#f57f17',
-        icon: 'fa-lemon'
-    },
-    {
-        id: 'goiaba',
-        nome: 'Geleia de Goiaba',
-        descricao: 'Fruta vermelha intensa',
-        preco: 35,
-        cor: '#ad1457',
-        icon: 'fa-peach'
-    },
-    {
-        id: 'frutas-vermelhas',
-        nome: 'Geleia de Frutas Vermelhas',
-        descricao: 'Mistura de frutas silvestres',
-        preco: 35,
-        cor: '#6a1b9a',
-        icon: 'fa-harvest'
-    }
-];
-
-const kit = {
-    id: 'kit-degustacao',
-    nome: 'Kit Degustação',
-    descricao: '3 potes de 250g com sabores à sua escolha',
-    preco: 99,
-    cor: '#8b4513',
-    icon: 'fa-gift'
+const CONFIG = {
+  whatsapp: {
+    phone: "5561998647768",
+    message: "Olá! Gostaria de fazer um pedido de geleias artesanais 🍓"
+  }
 };
 
-// ----- Estado do Carrinho -----
-let carrinho = [];
+// ============================================================
+// PRODUTOS (CATÁLOGO DE GELEIAS)
+// ============================================================
 
-// ----- Inicialização -----
-document.addEventListener('DOMContentLoaded', () => {
-    carregarCarrinho();
-    renderizarProdutos();
-    configurarEventos();
+const PRODUCTS = [
+  {
+    id: 1,
+    name: "Geleia de Morango",
+    flavor: "morango",
+    price: 25.00,
+    description: "Feita com morangos frescos selecionados, textura cremosa e sabor autêntico.",
+    emoji: "🍓",
+    badge: "Mais Vendida"
+  },
+  {
+    id: 2,
+    name: "Geleia de Jabuticaba",
+    flavor: "jabuticaba",
+    price: 28.00,
+    description: "Fruta típica do cerrado brasileiro, sabor intenso e levemente adstringente.",
+    emoji: "🫐",
+    badge: "Premium"
+  },
+  {
+    id: 3,
+    name: "Geleia de Maracujá",
+    flavor: "maracujá",
+    price: 25.00,
+    description: "Azedinha e refrescante, perfeita para queijos e sobremesas.",
+    emoji: "🍋",
+    badge: null
+  },
+  {
+    id: 4,
+    name: "Geleia de Goiaba",
+    flavor: "goiaba",
+    price: 23.00,
+    description: "Sabor tradicional brasileiro, rica em vitamina C e aroma irresistível.",
+    emoji: "🍎",
+    badge: null
+  },
+  {
+    id: 5,
+    name: "Geleia de Amora",
+    flavor: "amora",
+    price: 27.00,
+    description: "Cor intensa e sabor delicado, excelente com queijos brancos.",
+    emoji: "🫐",
+    badge: "Premium"
+  },
+  {
+    id: 6,
+    name: "Geleia de Frutas Vermelhas",
+    flavor: "frutas-vermelhas",
+    price: 30.00,
+    description: "Combinação de morango, amora e framboesa em uma única geleia.",
+    emoji: "🍒",
+    badge: "Especial"
+  }
+];
+
+// ============================================================
+// CARRINHO DE COMPRAS
+// ============================================================
+
+let cart = [];
+
+// Carregar carrinho do localStorage
+function loadCart() {
+  const saved = localStorage.getItem("doceSaborCart");
+  if (saved) {
+    cart = JSON.parse(saved);
+  }
+  updateCartUI();
+}
+
+// Salvar carrinho no localStorage
+function saveCart() {
+  localStorage.setItem("doceSaborCart", JSON.stringify(cart));
+}
+
+// Adicionar item ao carrinho
+function addToCart(productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product) return;
+
+  const existingItem = cart.find(item => item.id === productId);
+  
+  if (existingItem) {
+    existingItem.quantity++;
+  } else {
+    cart.push({
+      ...product,
+      quantity: 1
+    });
+  }
+
+  saveCart();
+  updateCartUI();
+  showCartNotification(product.name);
+}
+
+// Remover item do carrinho
+function removeFromCart(productId) {
+  cart = cart.filter(item => item.id !== productId);
+  saveCart();
+  updateCartUI();
+}
+
+// Atualizar quantidade
+function updateQuantity(productId, delta) {
+  const item = cart.find(item => item.id === productId);
+  if (!item) return;
+
+  item.quantity += delta;
+
+  if (item.quantity <= 0) {
+    removeFromCart(productId);
+  } else {
+    saveCart();
+    updateCartUI();
+  }
+}
+
+// Calcular total do carrinho
+function getCartTotal() {
+  return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+}
+
+// Contagem de itens
+function getCartCount() {
+  return cart.reduce((count, item) => count + item.quantity, 0);
+}
+
+// Gerar mensagem do WhatsApp com o pedido
+function generateOrderMessage() {
+  if (cart.length === 0) return null;
+
+  let message = "Olá! Gostaria de fazer o seguinte pedido:%0A%0A";
+  
+  cart.forEach(item => {
+    message += `• ${item.name} (x${item.quantity}) - R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}%0A`;
+  });
+
+  message += `%0A*Total: R$ ${getCartTotal().toFixed(2).replace('.', ',')}*%0A%0AObrigado!`;
+
+  return message;
+}
+
+// Mostrar notificação de adição ao carrinho
+function showCartNotification(productName) {
+  // Remover notificação anterior se existir
+  const existing = document.querySelector(".cart-notification");
+  if (existing) existing.remove();
+
+  const notification = document.createElement("div");
+  notification.className = "cart-notification";
+  notification.innerHTML = `
+    <span class="cart-notification__icon">✓</span>
+    <span class="cart-notification__text">${productName} adicionada ao carrinho!</span>
+  `;
+
+  document.body.appendChild(notification);
+
+  // Animar entrada
+  setTimeout(() => notification.classList.add("show"), 10);
+
+  // Remover após 3 segundos
+  setTimeout(() => {
+    notification.classList.remove("show");
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Atualizar UI do carrinho
+function updateCartUI() {
+  const count = getCartCount();
+  const total = getCartTotal();
+
+  // Atualizar botão flutuante do carrinho
+  const cartBtn = document.getElementById("cartBtn");
+  if (cartBtn) {
+    const badge = cartBtn.querySelector(".cart-btn__badge");
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? "flex" : "none";
+    }
+  }
+
+  // Atualizar badge no navbar (se existir)
+  const navBadge = document.getElementById("cartNavBadge");
+  if (navBadge) {
+    navBadge.textContent = count;
+    navBadge.style.display = count > 0 ? "flex" : "none";
+  }
+
+  // Atualizar modal do carrinho
+  const cartItems = document.getElementById("cartItems");
+  const cartTotal = document.getElementById("cartTotal");
+  const cartEmpty = document.getElementById("cartEmpty");
+  const checkoutBtn = document.getElementById("checkoutBtn");
+
+  if (cartItems && cartTotal && cartEmpty && checkoutBtn) {
+    if (cart.length === 0) {
+      cartEmpty.style.display = "block";
+      cartItems.innerHTML = "";
+      cartTotal.textContent = "R$ 0,00";
+      checkoutBtn.disabled = true;
+      checkoutBtn.classList.add("disabled");
+    } else {
+      cartEmpty.style.display = "none";
+      cartItems.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <div class="cart-item__info">
+            <span class="cart-item__emoji">${item.emoji}</span>
+            <div>
+              <h4 class="cart-item__name">${item.name}</h4>
+              <span class="cart-item__price">R$ ${item.price.toFixed(2).replace('.', ',')}</span>
+            </div>
+          </div>
+          <div class="cart-item__actions">
+            <button class="cart-item__btn" onclick="updateQuantity(${item.id}, -1)" aria-label="Diminuir">−</button>
+            <span class="cart-item__qty">${item.quantity}</span>
+            <button class="cart-item__btn" onclick="updateQuantity(${item.id}, 1)" aria-label="Aumentar">+</button>
+            <button class="cart-item__remove" onclick="removeFromCart(${item.id})" aria-label="Remover">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `).join("");
+      cartTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+      checkoutBtn.disabled = false;
+      checkoutBtn.classList.remove("disabled");
+    }
+  }
+}
+
+// Abrir/fechar modal do carrinho
+function toggleCart() {
+  const modal = document.getElementById("cartModal");
+  const overlay = document.getElementById("cartOverlay");
+  
+  if (modal && overlay) {
+    const isOpen = modal.classList.contains("open");
+    
+    if (isOpen) {
+      modal.classList.remove("open");
+      overlay.classList.remove("open");
+      document.body.classList.remove("no-scroll");
+    } else {
+      modal.classList.add("open");
+      overlay.classList.add("open");
+      document.body.classList.add("no-scroll");
+    }
+  }
+}
+
+// Finalizar pedido via WhatsApp
+function checkout() {
+  if (cart.length === 0) return;
+
+  const message = generateOrderMessage();
+  const { phone } = CONFIG.whatsapp;
+  const url = `https://wa.me/${phone}?text=${message}`;
+  
+  window.open(url, "_blank");
+}
+
+// Limpar carrinho
+function clearCart() {
+  cart = [];
+  saveCart();
+  updateCartUI();
+}
+
+// Inicializar carrinho
+loadCart();
+
+// ============================================================
+// NAVBAR SCROLL
+// ============================================================
+
+const navbar = document.getElementById("navbar");
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 40) {
+    navbar.classList.add("scrolled");
+  } else {
+    navbar.classList.remove("scrolled");
+  }
 });
 
-// ----- Renderizar Produtos -----
-function renderizarProdutos() {
-    const grid = document.getElementById('productsGrid');
-    
-    grid.innerHTML = produtos.map(produto => `
-        <div class="product-card" data-flavor="${produto.id}">
-            <div class="product-image">
-                <i class="fas ${produto.icon}"></i>
-            </div>
-            <div class="product-info">
-                <h3 class="product-name">${produto.nome}</h3>
-                <p class="product-description">${produto.descricao}</p>
-                <div class="product-footer">
-                    <span class="product-price">R$ ${produto.preco.toFixed(2)}</span>
-                    <div class="quantity-control">
-                        <button class="quantity-btn" onclick="diminuirQuantidade('${produto.id}')">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <span class="quantity-value" id="qty-${produto.id}">${obterQuantidade(produto.id)}</span>
-                        <button class="quantity-btn" onclick="aumentarQuantidade('${produto.id}')">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-                <button class="btn btn-add" style="width: 100%; margin-top: 15px;" onclick="adicionarProduto('${produto.id}')">
-                    <i class="fas fa-cart-plus"></i>
-                    Adicionar ao carrinho
-                </button>
-            </div>
-        </div>
-    `).join('');
+// ============================================================
+// MENU MOBILE
+// ============================================================
+
+const hamburgerBtn = document.getElementById("hamburgerBtn");
+const mobileMenu = document.getElementById("mobileMenu");
+const mobileLinks = document.querySelectorAll(".mobile-link");
+
+hamburgerBtn.addEventListener("click", () => {
+  hamburgerBtn.classList.toggle("active");
+  mobileMenu.classList.toggle("open");
+  document.body.classList.toggle("no-scroll");
+});
+
+mobileLinks.forEach(link => {
+  link.addEventListener("click", () => {
+    hamburgerBtn.classList.remove("active");
+    mobileMenu.classList.remove("open");
+    document.body.classList.remove("no-scroll");
+  });
+});
+
+// ============================================================
+// SCROLL REVEAL (IntersectionObserver)
+// ============================================================
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("in-view");
+      observer.unobserve(entry.target); // performance
+    }
+  });
+}, {
+  threshold: 0.15
+});
+
+document.querySelectorAll("[data-animate]").forEach(el => {
+  observer.observe(el);
+});
+
+// ============================================================
+// WHATSAPP LINK DINÂMICO
+// ============================================================
+
+function generateWhatsAppLink() {
+  const { phone, message } = CONFIG.whatsapp;
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
-// ----- Funções do Carrinho -----
-function adicionarProduto(id) {
-    const produto = produtos.find(p => p.id === id);
-    if (!produto) return;
-    
-    const itemExistente = carrinho.find(item => item.id === id);
-    
-    if (itemExistente) {
-        itemExistente.quantidade += 1;
+// aplica em todos os botões
+document.querySelectorAll("#heroWhatsappBtn, #ctaWhatsappBtn, #whatsappFloat")
+  .forEach(btn => {
+    btn.href = generateWhatsAppLink();
+  });
+
+// ============================================================
+// BOTÃO WHATSAPP FLOAT (aparece depois de scroll)
+// ============================================================
+
+const whatsappFloat = document.getElementById("whatsappFloat");
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 500) {
+    whatsappFloat.classList.add("visible");
+  } else {
+    whatsappFloat.classList.remove("visible");
+  }
+});
+
+// ============================================================
+// CARROSSEL DE DEPOIMENTOS
+// ============================================================
+
+const track = document.getElementById("testimonialsTrack");
+const prevBtn = document.getElementById("testimonialPrev");
+const nextBtn = document.getElementById("testimonialNext");
+const dotsContainer = document.getElementById("testimonialDots");
+
+const cards = document.querySelectorAll(".testimonial-card");
+
+let index = 0;
+
+// cálculo dinâmico (responsivo)
+function getVisibleCards() {
+  if (window.innerWidth >= 960) return 3;
+  if (window.innerWidth >= 640) return 2;
+  return 1;
+}
+
+// criar dots
+function createDots() {
+  dotsContainer.innerHTML = "";
+  const total = cards.length - getVisibleCards() + 1;
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement("button");
+    dot.classList.add("testimonials__dot");
+
+    if (i === 0) dot.classList.add("active");
+
+    dot.addEventListener("click", () => {
+      index = i;
+      updateCarousel();
+    });
+
+    dotsContainer.appendChild(dot);
+  }
+}
+
+// atualizar posição
+function updateCarousel() {
+  const cardWidth = cards[0].offsetWidth + 24; // gap
+  track.style.transform = `translateX(-${index * cardWidth}px)`;
+
+  // atualizar dots
+  document.querySelectorAll(".testimonials__dot").forEach((dot, i) => {
+    dot.classList.toggle("active", i === index);
+  });
+
+  // limites botões
+  const maxIndex = cards.length - getVisibleCards();
+
+  prevBtn.disabled = index === 0;
+  nextBtn.disabled = index >= maxIndex;
+}
+
+// botões
+prevBtn.addEventListener("click", () => {
+  index--;
+  updateCarousel();
+});
+
+nextBtn.addEventListener("click", () => {
+  index++;
+  updateCarousel();
+});
+
+// swipe mobile
+let startX = 0;
+
+track.addEventListener("touchstart", (e) => {
+  startX = e.touches[0].clientX;
+});
+
+track.addEventListener("touchend", (e) => {
+  const endX = e.changedTouches[0].clientX;
+  const diff = startX - endX;
+
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      nextBtn.click();
     } else {
-        carrinho.push({
-            id: produto.id,
-            nome: produto.nome,
-            preco: produto.preco,
-            quantidade: 1
-        });
+      prevBtn.click();
     }
-    
-    salvarCarrinho();
-    atualizarInterface();
-    abrirCarrinho();
-}
+  }
+});
 
-function adicionarKit() {
-    const itemExistente = carrinho.find(item => item.id === kit.id);
-    
-    if (itemExistente) {
-        itemExistente.quantidade += 1;
-    } else {
-        carrinho.push({
-            id: kit.id,
-            nome: kit.nome,
-            preco: kit.preco,
-            quantidade: 1
-        });
+// resize handler
+window.addEventListener("resize", () => {
+  index = 0;
+  createDots();
+  updateCarousel();
+});
+
+// init
+createDots();
+updateCarousel();
+
+// ============================================================
+// MELHORIA DE PERFORMANCE (throttle scroll)
+// ============================================================
+
+function throttle(fn, wait) {
+  let time = Date.now();
+  return function() {
+    if ((time + wait - Date.now()) < 0) {
+      fn();
+      time = Date.now();
     }
-    
-    salvarCarrinho();
-    atualizarInterface();
-    abrirCarrinho();
+  };
 }
 
-function removerItem(id) {
-    carrinho = carrinho.filter(item => item.id !== id);
-    salvarCarrinho();
-    atualizarInterface();
-}
-
-function aumentarQuantidadeItem(id) {
-    const item = carrinho.find(item => item.id === id);
-    if (item) {
-        item.quantidade += 1;
-        salvarCarrinho();
-        atualizarInterface();
-    }
-}
-
-function diminuirQuantidadeItem(id) {
-    const item = carrinho.find(item => item.id === id);
-    if (item) {
-        if (item.quantidade > 1) {
-            item.quantidade -= 1;
-        } else {
-            removerItem(id);
-            return;
-        }
-        salvarCarrinho();
-        atualizarInterface();
-    }
-}
-
-function obterQuantidade(id) {
-    const item = carrinho.find(item => item.id === id);
-    return item ? item.quantidade : 0;
-}
-
-function aumentarQuantidade(id) {
-    adicionarProduto(id);
-}
-
-function diminuirQuantidade(id) {
-    const item = carrinho.find(item => item.id === id);
-    if (item) {
-        if (item.quantidade > 1) {
-            item.quantidade -= 1;
-        } else {
-            removerItem(id);
-            return;
-        }
-        salvarCarrinho();
-        atualizarInterface();
-    }
-}
-
-// ----- Cálculos -----
-function calcularTotal() {
-    return carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
-}
-
-function obterQuantidadeTotal() {
-    return carrinho.reduce((total, item) => total + item.quantidade, 0);
-}
-
-// ----- Interface -----
-function atualizarInterface() {
-    atualizarContador();
-    renderizarItensCarrinho();
-    atualizarTotal();
-    verificarBotaoCheckout();
-}
-
-function atualizarContador() {
-    const contador = document.getElementById('cartCount');
-    const total = obterQuantidadeTotal();
-    contador.textContent = total;
-    contador.style.display = total > 0 ? 'flex' : 'none';
-}
-
-function renderizarItensCarrinho() {
-    const container = document.getElementById('cartItems');
-    
-    if (carrinho.length === 0) {
-        container.innerHTML = `
-            <div class="cart-empty">
-                <i class="fas fa-shopping-basket"></i>
-                <p>Seu carrinho está vazio</p>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = carrinho.map(item => {
-        const produto = produtos.find(p => p.id === item.id) || kit;
-        const cor = produto.cor || '#8b4513';
-        
-        return `
-            <div class="cart-item">
-                <div class="cart-item-image" style="background: ${cor}20;">
-                    <i class="fas ${produto.icon}" style="color: ${cor};"></i>
-                </div>
-                <div class="cart-item-details">
-                    <div class="cart-item-name">${item.nome}</div>
-                    <div class="cart-item-price">R$ ${item.preco.toFixed(2)}</div>
-                    <div class="cart-item-quantity">
-                        <button onclick="diminuirQuantidadeItem('${item.id}')">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <span>${item.quantidade}</span>
-                        <button onclick="aumentarQuantidadeItem('${item.id}')">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-                <button class="cart-item-remove" onclick="removerItem('${item.id}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-    }).join('');
-}
-
-function atualizarTotal() {
-    const total = calcularTotal();
-    document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2)}`;
-}
-
-function verificarBotaoCheckout() {
-    const botao = document.getElementById('checkoutBtn');
-    botao.disabled = carrinho.length === 0;
-}
-
-// ----- Persistência -----
-function salvarCarrinho() {
-    localStorage.setItem('doceSaborCarrinho', JSON.stringify(carrinho));
-}
-
-function carregarCarrinho() {
-    const salvo = localStorage.getItem('doceSaborCarrinho');
-    if (salvo) {
-        carrinho = JSON.parse(salvo);
-        atualizarInterface();
-    }
-}
-
-// ----- WhatsApp -----
-function finalizarPedido() {
-    if (carrinho.length === 0) return;
-    
-    const total = calcularTotal();
-    let mensagem = `Olá! Quero fazer um pedido:%0A%0A`;
-    
-    carrinho.forEach(item => {
-        mensagem += `• ${item.nome} — ${item.quantidade} ${item.quantidade === 1 ? 'unidade' : 'unidades'}%0A`;
-    });
-    
-    mensagem += `%0ATotal estimado: R$ ${total.toFixed(2)}%0A%0AGostaria de confirmar disponibilidade e entrega.`;
-    
-    const urlWhatsApp = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensagem}`;
-    
-    window.open(urlWhatsApp, '_blank');
-}
-
-// ----- Eventos do Carrinho -----
-function configurarEventos() {
-    const toggle = document.getElementById('cartToggle');
-    const sidebar = document.getElementById('cartSidebar');
-    const overlay = document.getElementById('cartOverlay');
-    const close = document.getElementById('cartClose');
-    
-    toggle.addEventListener('click', () => {
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-    });
-    
-    close.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-    });
-    
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-    });
-}
-
-function abrirCarrinho() {
-    const sidebar = document.getElementById('cartSidebar');
-    const overlay = document.getElementById('cartOverlay');
-    sidebar.classList.add('active');
-    overlay.classList.add('active');
-}
+// aplica throttle no scroll pesado
+window.addEventListener("scroll", throttle(() => {
+  // já usado para float + navbar
+}, 100));
