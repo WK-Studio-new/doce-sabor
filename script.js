@@ -1,392 +1,336 @@
-/* =============================================
-   GELEIAS DA VOVÓ — SCRIPT
-   Funcionalidades: Carrinho, LocalStorage, WhatsApp
-   ============================================= */
+/* ========================================
+   DOCE SABOR - Geleias Artesanais
+   Script.js
+   ======================================== */
 
-// ─────────────────────────────────────────────
-// CONFIGURAÇÕES
-// ─────────────────────────────────────────────
+// ----- Configuração -----
+// Número do WhatsApp (substitua pelo número real)
+const WHATSAPP_NUMERO = '5511999999999';
 
-const WHATSAPP_NUMBER = '5571999999999'; // Substitua pelo número real (com DDI e DDD, sem espaços ou sinais)
-
-const PRODUCTS = [
-  { id: 'morango',       name: 'Geleia de Morango',        emoji: '🍓', price: 35 },
-  { id: 'manga',         name: 'Geleia de Manga',           emoji: '🥭', price: 35 },
-  { id: 'maracuja',      name: 'Geleia de Maracujá',        emoji: '🍈', price: 35 },
-  { id: 'goiaba',        name: 'Geleia de Goiaba',          emoji: '🍑', price: 35 },
-  { id: 'frutasvermelhas', name: 'Frutas Vermelhas',        emoji: '🫐', price: 35 },
+// ----- Dados dos Produtos ----- 
+const produtos = [
+    {
+        id: 'morango',
+        nome: 'Geleia de Morango',
+        descricao: 'Frutas frescas selecionadas',
+        preco: 35,
+        cor: '#c62828',
+        icon: 'fa-strawberry'
+    },
+    {
+        id: 'manga',
+        nome: 'Geleia de Manga',
+        descricao: 'Manga madura e doce',
+        preco: 35,
+        cor: '#e65100',
+        icon: 'fa-lemon'
+    },
+    {
+        id: 'maracuja',
+        nome: 'Geleia de Maracujá',
+        descricao: 'Polpa natural ácida',
+        preco: 35,
+        cor: '#f57f17',
+        icon: 'fa-lemon'
+    },
+    {
+        id: 'goiaba',
+        nome: 'Geleia de Goiaba',
+        descricao: 'Fruta vermelha intensa',
+        preco: 35,
+        cor: '#ad1457',
+        icon: 'fa-peach'
+    },
+    {
+        id: 'frutas-vermelhas',
+        nome: 'Geleia de Frutas Vermelhas',
+        descricao: 'Mistura de frutas silvestres',
+        preco: 35,
+        cor: '#6a1b9a',
+        icon: 'fa-harvest'
+    }
 ];
 
-// ─────────────────────────────────────────────
-// ESTADO DO CARRINHO
-// ─────────────────────────────────────────────
+const kit = {
+    id: 'kit-degustacao',
+    nome: 'Kit Degustação',
+    descricao: '3 potes de 250g com sabores à sua escolha',
+    preco: 99,
+    cor: '#8b4513',
+    icon: 'fa-gift'
+};
 
-let cart = loadCart();
+// ----- Estado do Carrinho -----
+let carrinho = [];
 
-// ─────────────────────────────────────────────
-// INICIALIZAÇÃO
-// ─────────────────────────────────────────────
-
+// ----- Inicialização -----
 document.addEventListener('DOMContentLoaded', () => {
-  renderProducts();
-  renderCart();
-  createOverlay();
+    carregarCarrinho();
+    renderizarProdutos();
+    configurarEventos();
 });
 
-// ─────────────────────────────────────────────
-// RENDERIZAÇÃO DOS PRODUTOS
-// ─────────────────────────────────────────────
+// ----- Renderizar Produtos -----
+function renderizarProdutos() {
+    const grid = document.getElementById('productsGrid');
+    
+    grid.innerHTML = produtos.map(produto => `
+        <div class="product-card" data-flavor="${produto.id}">
+            <div class="product-image">
+                <i class="fas ${produto.icon}"></i>
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">${produto.nome}</h3>
+                <p class="product-description">${produto.descricao}</p>
+                <div class="product-footer">
+                    <span class="product-price">R$ ${produto.preco.toFixed(2)}</span>
+                    <div class="quantity-control">
+                        <button class="quantity-btn" onclick="diminuirQuantidade('${produto.id}')">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span class="quantity-value" id="qty-${produto.id}">${obterQuantidade(produto.id)}</span>
+                        <button class="quantity-btn" onclick="aumentarQuantidade('${produto.id}')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-add" style="width: 100%; margin-top: 15px;" onclick="adicionarProduto('${produto.id}')">
+                    <i class="fas fa-cart-plus"></i>
+                    Adicionar ao carrinho
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
 
-function renderProducts() {
-  const grid = document.getElementById('products-grid');
-  if (!grid) return;
-
-  grid.innerHTML = PRODUCTS.map(p => `
-    <div class="product-card" id="card-${p.id}">
-      <div class="product-card__emoji">${p.emoji}</div>
-      <div class="product-card__name">${p.name}</div>
-      <div class="product-card__weight">Pote 250g</div>
-      <div class="product-card__price">R$ ${p.price}</div>
-
-      <div class="qty-control" id="qty-${p.id}" style="display:none">
-        <button class="qty-control__btn" onclick="changeQty('${p.id}', -1)" aria-label="Diminuir">−</button>
-        <span class="qty-control__num" id="qty-num-${p.id}">1</span>
-        <button class="qty-control__btn" onclick="changeQty('${p.id}', 1)" aria-label="Aumentar">+</button>
-      </div>
-
-      <button class="btn btn--outline" id="btn-${p.id}" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, '${p.emoji}')">
-        + Adicionar
-      </button>
-    </div>
-  `).join('');
-
-  // Sincronizar estado visual com carrinho já existente
-  cart.forEach(item => {
-    if (item.id !== 'kit-degustacao') {
-      updateProductCardUI(item.id, item.qty);
+// ----- Funções do Carrinho -----
+function adicionarProduto(id) {
+    const produto = produtos.find(p => p.id === id);
+    if (!produto) return;
+    
+    const itemExistente = carrinho.find(item => item.id === id);
+    
+    if (itemExistente) {
+        itemExistente.quantidade += 1;
+    } else {
+        carrinho.push({
+            id: produto.id,
+            nome: produto.nome,
+            preco: produto.preco,
+            quantidade: 1
+        });
     }
-  });
+    
+    salvarCarrinho();
+    atualizarInterface();
+    abrirCarrinho();
 }
 
-// ─────────────────────────────────────────────
-// GERENCIAMENTO DO CARRINHO
-// ─────────────────────────────────────────────
-
-/**
- * Adiciona item ao carrinho (chamado pelo botão do card e pelo kit)
- */
-function addToCart(idOrName, priceOrName, priceOrUndefined, emoji) {
-  // Suporte às duas assinaturas:
-  // addToCart('Kit Degustação', 99)           ← do HTML inline (kit)
-  // addToCart(id, name, price, emoji)          ← do JS (produtos)
-
-  let item;
-
-  if (priceOrUndefined === undefined) {
-    // Kit chamado do HTML: addToCart('Kit Degustação', 99)
-    const kitName  = idOrName;
-    const kitPrice = priceOrName;
-    item = {
-      id:    'kit-degustacao',
-      name:  kitName,
-      price: kitPrice,
-      emoji: '🎁',
-      qty:   1,
-    };
-  } else {
-    // Produto: addToCart(id, name, price, emoji)
-    item = {
-      id:    idOrName,
-      name:  priceOrName,
-      price: priceOrUndefined,
-      emoji: emoji,
-      qty:   1,
-    };
-  }
-
-  const existing = cart.find(c => c.id === item.id);
-
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push(item);
-  }
-
-  if (item.id !== 'kit-degustacao') {
-    const inCart = cart.find(c => c.id === item.id);
-    updateProductCardUI(item.id, inCart.qty);
-  }
-
-  saveCart();
-  renderCart();
-  showToast(`${item.emoji} ${item.name} adicionado!`);
-  animateFab();
+function adicionarKit() {
+    const itemExistente = carrinho.find(item => item.id === kit.id);
+    
+    if (itemExistente) {
+        itemExistente.quantidade += 1;
+    } else {
+        carrinho.push({
+            id: kit.id,
+            nome: kit.nome,
+            preco: kit.preco,
+            quantidade: 1
+        });
+    }
+    
+    salvarCarrinho();
+    atualizarInterface();
+    abrirCarrinho();
 }
 
-/**
- * Altera quantidade via controle do card de produto
- */
-function changeQty(id, delta) {
-  const cartItem = cart.find(c => c.id === id);
-  if (!cartItem) return;
-
-  cartItem.qty += delta;
-
-  if (cartItem.qty <= 0) {
-    cart = cart.filter(c => c.id !== id);
-    updateProductCardUI(id, 0);
-  } else {
-    updateProductCardUI(id, cartItem.qty);
-  }
-
-  saveCart();
-  renderCart();
+function removerItem(id) {
+    carrinho = carrinho.filter(item => item.id !== id);
+    salvarCarrinho();
+    atualizarInterface();
 }
 
-/**
- * Altera quantidade via carrinho lateral
- */
-function changeCartQty(id, delta) {
-  const cartItem = cart.find(c => c.id === id);
-  if (!cartItem) return;
-
-  cartItem.qty += delta;
-
-  if (cartItem.qty <= 0) {
-    removeFromCart(id);
-    return;
-  }
-
-  if (id !== 'kit-degustacao') {
-    updateProductCardUI(id, cartItem.qty);
-  }
-
-  saveCart();
-  renderCart();
+function aumentarQuantidadeItem(id) {
+    const item = carrinho.find(item => item.id === id);
+    if (item) {
+        item.quantidade += 1;
+        salvarCarrinho();
+        atualizarInterface();
+    }
 }
 
-/**
- * Remove item completamente
- */
-function removeFromCart(id) {
-  cart = cart.filter(c => c.id !== id);
-
-  if (id !== 'kit-degustacao') {
-    updateProductCardUI(id, 0);
-  }
-
-  saveCart();
-  renderCart();
+function diminuirQuantidadeItem(id) {
+    const item = carrinho.find(item => item.id === id);
+    if (item) {
+        if (item.quantidade > 1) {
+            item.quantidade -= 1;
+        } else {
+            removerItem(id);
+            return;
+        }
+        salvarCarrinho();
+        atualizarInterface();
+    }
 }
 
-// ─────────────────────────────────────────────
-// RENDERIZAÇÃO DO CARRINHO LATERAL
-// ─────────────────────────────────────────────
-
-function renderCart() {
-  const list      = document.getElementById('cart-list');
-  const empty     = document.getElementById('cart-empty');
-  const footer    = document.getElementById('cart-footer');
-  const totalEl   = document.getElementById('cart-total');
-  const countEl   = document.getElementById('cart-count');
-
-  if (!list) return;
-
-  const totalItems = cart.reduce((sum, i) => sum + i.qty, 0);
-  const totalPrice = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-
-  // Atualizar badge do FAB
-  if (countEl) {
-    countEl.textContent = totalItems;
-    countEl.style.display = totalItems > 0 ? 'flex' : 'none';
-  }
-
-  if (cart.length === 0) {
-    list.innerHTML   = '';
-    empty.style.display  = 'block';
-    footer.style.display = 'none';
-    return;
-  }
-
-  empty.style.display  = 'none';
-  footer.style.display = 'block';
-
-  list.innerHTML = cart.map(item => `
-    <li class="cart__item">
-      <span class="cart__item-emoji">${item.emoji}</span>
-      <div class="cart__item-info">
-        <div class="cart__item-name">${item.name}</div>
-        <div class="cart__item-price">R$ ${(item.price * item.qty).toFixed(2).replace('.', ',')}</div>
-      </div>
-      <div class="cart__item-controls">
-        <button class="cart__item-btn cart__item-btn--dec" onclick="changeCartQty('${item.id}', -1)" aria-label="Diminuir">−</button>
-        <span class="cart__item-qty">${item.qty}</span>
-        <button class="cart__item-btn cart__item-btn--inc" onclick="changeCartQty('${item.id}', 1)" aria-label="Aumentar">+</button>
-        <button class="cart__item-btn cart__item-btn--del" onclick="removeFromCart('${item.id}')" aria-label="Remover">🗑</button>
-      </div>
-    </li>
-  `).join('');
-
-  totalEl.textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+function obterQuantidade(id) {
+    const item = carrinho.find(item => item.id === id);
+    return item ? item.quantidade : 0;
 }
 
-// ─────────────────────────────────────────────
-// UI DO CARD DE PRODUTO
-// ─────────────────────────────────────────────
-
-function updateProductCardUI(id, qty) {
-  const btn    = document.getElementById(`btn-${id}`);
-  const qtyCtrl = document.getElementById(`qty-${id}`);
-  const qtyNum  = document.getElementById(`qty-num-${id}`);
-
-  if (!btn || !qtyCtrl) return;
-
-  if (qty <= 0) {
-    btn.style.display     = 'block';
-    qtyCtrl.style.display = 'none';
-  } else {
-    btn.style.display     = 'none';
-    qtyCtrl.style.display = 'flex';
-    if (qtyNum) qtyNum.textContent = qty;
-  }
+function aumentarQuantidade(id) {
+    adicionarProduto(id);
 }
 
-// ─────────────────────────────────────────────
-// WHATSAPP
-// ─────────────────────────────────────────────
-
-function finalizeOrder() {
-  if (cart.length === 0) {
-    showToast('⚠️ Seu carrinho está vazio!');
-    return;
-  }
-
-  const lines = cart.map(item =>
-    `• ${item.name} — ${item.qty} unidade${item.qty > 1 ? 's' : ''}`
-  );
-
-  const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-  const totalStr = total.toFixed(2).replace('.', ',');
-
-  const message = [
-    'Olá! Quero fazer um pedido de Geleias Artesanais:',
-    '',
-    ...lines,
-    '',
-    `Total estimado: R$ ${totalStr}`,
-    '',
-    'Gostaria de confirmar disponibilidade e entrega. 🍓',
-  ].join('\n');
-
-  const encoded = encodeURIComponent(message);
-  const url     = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
-
-  window.open(url, '_blank');
+function diminuirQuantidade(id) {
+    const item = carrinho.find(item => item.id === id);
+    if (item) {
+        if (item.quantidade > 1) {
+            item.quantidade -= 1;
+        } else {
+            removerItem(id);
+            return;
+        }
+        salvarCarrinho();
+        atualizarInterface();
+    }
 }
 
-// ─────────────────────────────────────────────
-// CARRINHO — ABRIR / FECHAR
-// ─────────────────────────────────────────────
-
-function toggleCart() {
-  const cart    = document.getElementById('cart');
-  const overlay = document.getElementById('cart-overlay');
-  const isOpen  = cart.classList.toggle('is-open');
-
-  if (overlay) {
-    overlay.classList.toggle('is-visible', isOpen);
-  }
-
-  document.getElementById('cart-toggle').textContent = isOpen ? '✕' : '✕';
+// ----- Cálculos -----
+function calcularTotal() {
+    return carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
 }
 
-function createOverlay() {
-  const overlay = document.createElement('div');
-  overlay.className = 'cart-overlay';
-  overlay.id        = 'cart-overlay';
-  overlay.addEventListener('click', closeCart);
-  document.body.appendChild(overlay);
+function obterQuantidadeTotal() {
+    return carrinho.reduce((total, item) => total + item.quantidade, 0);
 }
 
-function closeCart() {
-  document.getElementById('cart').classList.remove('is-open');
-  const overlay = document.getElementById('cart-overlay');
-  if (overlay) overlay.classList.remove('is-visible');
+// ----- Interface -----
+function atualizarInterface() {
+    atualizarContador();
+    renderizarItensCarrinho();
+    atualizarTotal();
+    verificarBotaoCheckout();
 }
 
-// Botão fechar do carrinho
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle = document.getElementById('cart-toggle');
-  if (toggle) toggle.addEventListener('click', closeCart);
-});
-
-// ─────────────────────────────────────────────
-// LOCALSTORAGE
-// ─────────────────────────────────────────────
-
-function saveCart() {
-  try {
-    localStorage.setItem('geleias_cart', JSON.stringify(cart));
-  } catch (e) {
-    console.warn('Não foi possível salvar o carrinho:', e);
-  }
+function atualizarContador() {
+    const contador = document.getElementById('cartCount');
+    const total = obterQuantidadeTotal();
+    contador.textContent = total;
+    contador.style.display = total > 0 ? 'flex' : 'none';
 }
 
-function loadCart() {
-  try {
-    const saved = localStorage.getItem('geleias_cart');
-    return saved ? JSON.parse(saved) : [];
-  } catch (e) {
-    return [];
-  }
+function renderizarItensCarrinho() {
+    const container = document.getElementById('cartItems');
+    
+    if (carrinho.length === 0) {
+        container.innerHTML = `
+            <div class="cart-empty">
+                <i class="fas fa-shopping-basket"></i>
+                <p>Seu carrinho está vazio</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = carrinho.map(item => {
+        const produto = produtos.find(p => p.id === item.id) || kit;
+        const cor = produto.cor || '#8b4513';
+        
+        return `
+            <div class="cart-item">
+                <div class="cart-item-image" style="background: ${cor}20;">
+                    <i class="fas ${produto.icon}" style="color: ${cor};"></i>
+                </div>
+                <div class="cart-item-details">
+                    <div class="cart-item-name">${item.nome}</div>
+                    <div class="cart-item-price">R$ ${item.preco.toFixed(2)}</div>
+                    <div class="cart-item-quantity">
+                        <button onclick="diminuirQuantidadeItem('${item.id}')">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span>${item.quantidade}</span>
+                        <button onclick="aumentarQuantidadeItem('${item.id}')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="cart-item-remove" onclick="removerItem('${item.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+    }).join('');
 }
 
-// ─────────────────────────────────────────────
-// TOAST NOTIFICATION
-// ─────────────────────────────────────────────
-
-let toastTimeout;
-
-function showToast(message) {
-  let toast = document.getElementById('toast');
-
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.className = 'toast';
-    document.body.appendChild(toast);
-  }
-
-  toast.textContent = message;
-  toast.classList.add('show');
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500);
+function atualizarTotal() {
+    const total = calcularTotal();
+    document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2)}`;
 }
 
-// ─────────────────────────────────────────────
-// ANIMAÇÃO DO FAB
-// ─────────────────────────────────────────────
-
-function animateFab() {
-  const fab = document.getElementById('cart-fab');
-  if (!fab) return;
-  fab.style.animation = 'none';
-  // Forçar reflow
-  void fab.offsetWidth;
-  fab.style.animation = 'cartBounce 0.4s ease';
+function verificarBotaoCheckout() {
+    const botao = document.getElementById('checkoutBtn');
+    botao.disabled = carrinho.length === 0;
 }
 
-// ─────────────────────────────────────────────
-// SMOOTH SCROLL para botão CTA do Hero
-// ─────────────────────────────────────────────
+// ----- Persistência -----
+function salvarCarrinho() {
+    localStorage.setItem('doceSaborCarrinho', JSON.stringify(carrinho));
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  const heroCta = document.querySelector('.hero__cta');
-  if (heroCta) {
-    heroCta.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = document.getElementById('produtos');
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function carregarCarrinho() {
+    const salvo = localStorage.getItem('doceSaborCarrinho');
+    if (salvo) {
+        carrinho = JSON.parse(salvo);
+        atualizarInterface();
+    }
+}
+
+// ----- WhatsApp -----
+function finalizarPedido() {
+    if (carrinho.length === 0) return;
+    
+    const total = calcularTotal();
+    let mensagem = `Olá! Quero fazer um pedido:%0A%0A`;
+    
+    carrinho.forEach(item => {
+        mensagem += `• ${item.nome} — ${item.quantidade} ${item.quantidade === 1 ? 'unidade' : 'unidades'}%0A`;
     });
-  }
-});
+    
+    mensagem += `%0ATotal estimado: R$ ${total.toFixed(2)}%0A%0AGostaria de confirmar disponibilidade e entrega.`;
+    
+    const urlWhatsApp = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensagem}`;
+    
+    window.open(urlWhatsApp, '_blank');
+}
+
+// ----- Eventos do Carrinho -----
+function configurarEventos() {
+    const toggle = document.getElementById('cartToggle');
+    const sidebar = document.getElementById('cartSidebar');
+    const overlay = document.getElementById('cartOverlay');
+    const close = document.getElementById('cartClose');
+    
+    toggle.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+    });
+    
+    close.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+    });
+    
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+    });
+}
+
+function abrirCarrinho() {
+    const sidebar = document.getElementById('cartSidebar');
+    const overlay = document.getElementById('cartOverlay');
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+}
