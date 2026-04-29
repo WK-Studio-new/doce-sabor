@@ -4,8 +4,8 @@
    ======================================== */
 
 // ----- Configuração -----
-// Número do WhatsApp (substitua pelo número real)
-const WHATSAPP_NUMERO = '5511999999999';
+// Número do WhatsApp
+const WHATSAPP_NUMERO = '5561998647768';
 
 // ----- Dados dos Produtos ----- 
 const produtos = [
