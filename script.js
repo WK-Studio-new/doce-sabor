@@ -1,525 +1,585 @@
-// ============================================================
-// CONFIG GLOBAL
-// ============================================================
+/* ============================================================
+   DOCE SABOR — script.js
+   Funcionalidades:
+   - Navbar scroll
+   - Menu mobile (hamburguer)
+   - Aba de Sabores (tabs)
+   - Carrinho de compras (sidebar + badge + localStorage)
+   - Carrossel de depoimentos
+   - Animações de entrada por scroll (IntersectionObserver)
+   - Botão WhatsApp flutuante
+   - Botão de fechar / abrir carrinho
+============================================================ */
 
-const CONFIG = {
-  whatsapp: {
-    phone: "5561998647768",
-    message: "Olá! Gostaria de fazer um pedido de geleias artesanais 🍓"
-  }
-};
+'use strict';
 
-// ============================================================
-// PRODUTOS (CATÁLOGO DE GELEIAS)
-// ============================================================
-
-const PRODUCTS = [
+/* ─────────────────────────────────────────────
+   DADOS DOS SABORES
+───────────────────────────────────────────── */
+const SABORES = [
   {
-    id: 1,
-    name: "Geleia de Morango",
-    flavor: "morango",
-    price: 25.00,
-    description: "Feita com morangos frescos selecionados, textura cremosa e sabor autêntico.",
-    emoji: "🍓",
-    badge: "Mais Vendida"
+    id: 'morango-limao',
+    nome: 'Morango com Limão',
+    descricao: 'A doçura vibrante do morango equilibrada com o frescor cítrico do limão siciliano. Perfeita para começar o dia com energia.',
+    emoji: '🍓🍋',
+    cor: '#c0392b',
+    corClara: '#f9e5e3',
+    preco: 28.90,
+    nota: '★★★★★',
+    tags: ['Mais Vendida', 'Clássica'],
   },
   {
-    id: 2,
-    name: "Geleia de Jabuticaba",
-    flavor: "jabuticaba",
-    price: 28.00,
-    description: "Fruta típica do cerrado brasileiro, sabor intenso e levemente adstringente.",
-    emoji: "🫐",
-    badge: "Premium"
+    id: 'manga-maracuja',
+    nome: 'Manga com Maracujá',
+    descricao: 'A polpa dourada da manga encontra a acidez tropical do maracujá. Uma explosão de sabores que transporta você para o verão.',
+    emoji: '🥭🌸',
+    cor: '#e67e22',
+    corClara: '#fef3e2',
+    preco: 30.90,
+    nota: '★★★★★',
+    tags: ['Tropical', 'Favorita'],
   },
   {
-    id: 3,
-    name: "Geleia de Maracujá",
-    flavor: "maracujá",
-    price: 25.00,
-    description: "Azedinha e refrescante, perfeita para queijos e sobremesas.",
-    emoji: "🍋",
-    badge: null
+    id: 'abacaxi-gengibre',
+    nome: 'Abacaxi com Gengibre',
+    descricao: 'A suavidade do abacaxi maduro com o toque picante e quente do gengibre fresco. Uma combinação surpreendente e sofisticada.',
+    emoji: '🍍🫚',
+    cor: '#27ae60',
+    corClara: '#e8f8f0',
+    preco: 30.90,
+    nota: '★★★★★',
+    tags: ['Gourmet', 'Novidade'],
   },
-  {
-    id: 4,
-    name: "Geleia de Goiaba",
-    flavor: "goiaba",
-    price: 23.00,
-    description: "Sabor tradicional brasileiro, rica em vitamina C e aroma irresistível.",
-    emoji: "🍎",
-    badge: null
-  },
-  {
-    id: 5,
-    name: "Geleia de Amora",
-    flavor: "amora",
-    price: 27.00,
-    description: "Cor intensa e sabor delicado, excelente com queijos brancos.",
-    emoji: "🫐",
-    badge: "Premium"
-  },
-  {
-    id: 6,
-    name: "Geleia de Frutas Vermelhas",
-    flavor: "frutas-vermelhas",
-    price: 30.00,
-    description: "Combinação de morango, amora e framboesa em uma única geleia.",
-    emoji: "🍒",
-    badge: "Especial"
-  }
 ];
 
-// ============================================================
-// CARRINHO DE COMPRAS
-// ============================================================
+/* ─────────────────────────────────────────────
+   ESTADO DO CARRINHO
+───────────────────────────────────────────── */
+let cart = JSON.parse(localStorage.getItem('doce-sabor-cart') || '[]');
 
-let cart = [];
-
-// Carregar carrinho do localStorage
-function loadCart() {
-  const saved = localStorage.getItem("doceSaborCart");
-  if (saved) {
-    cart = JSON.parse(saved);
-  }
-  updateCartUI();
-}
-
-// Salvar carrinho no localStorage
 function saveCart() {
-  localStorage.setItem("doceSaborCart", JSON.stringify(cart));
+  localStorage.setItem('doce-sabor-cart', JSON.stringify(cart));
 }
 
-// Adicionar item ao carrinho
-function addToCart(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  if (!product) return;
-
-  const existingItem = cart.find(item => item.id === productId);
-  
-  if (existingItem) {
-    existingItem.quantity++;
-  } else {
-    cart.push({
-      ...product,
-      quantity: 1
-    });
-  }
-
-  saveCart();
-  updateCartUI();
-  showCartNotification(product.name);
-}
-
-// Remover item do carrinho
-function removeFromCart(productId) {
-  cart = cart.filter(item => item.id !== productId);
-  saveCart();
-  updateCartUI();
-}
-
-// Atualizar quantidade
-function updateQuantity(productId, delta) {
-  const item = cart.find(item => item.id === productId);
-  if (!item) return;
-
-  item.quantity += delta;
-
-  if (item.quantity <= 0) {
-    removeFromCart(productId);
-  } else {
-    saveCart();
-    updateCartUI();
-  }
-}
-
-// Calcular total do carrinho
 function getCartTotal() {
-  return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  return cart.reduce((sum, item) => sum + item.preco * item.qty, 0);
 }
 
-// Contagem de itens
 function getCartCount() {
-  return cart.reduce((count, item) => count + item.quantity, 0);
+  return cart.reduce((sum, item) => sum + item.qty, 0);
 }
 
-// Gerar mensagem do WhatsApp com o pedido
-function generateOrderMessage() {
-  if (cart.length === 0) return null;
+/* ─────────────────────────────────────────────
+   NAVBAR — scroll e hamburguer
+───────────────────────────────────────────── */
+function initNavbar() {
+  const navbar       = document.getElementById('navbar');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu   = document.getElementById('mobileMenu');
+  const mobileLinks  = document.querySelectorAll('.mobile-link');
 
-  let message = "Olá! Gostaria de fazer o seguinte pedido:%0A%0A";
-  
-  cart.forEach(item => {
-    message += `• ${item.name} (x${item.quantity}) - R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}%0A`;
+  // Scroll: adiciona classe .scrolled
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  // Hamburguer
+  hamburgerBtn.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburgerBtn.classList.toggle('active', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
   });
 
-  message += `%0A*Total: R$ ${getCartTotal().toFixed(2).replace('.', ',')}*%0A%0AObrigado!`;
-
-  return message;
+  // Fechar menu ao clicar em link
+  mobileLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      hamburgerBtn.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  });
 }
 
-// Mostrar notificação de adição ao carrinho
-function showCartNotification(productName) {
-  // Remover notificação anterior se existir
-  const existing = document.querySelector(".cart-notification");
-  if (existing) existing.remove();
+/* ─────────────────────────────────────────────
+   SEÇÃO DE SABORES — construção dinâmica e tabs
+───────────────────────────────────────────── */
+function buildSaboresSection() {
+  // Encontra o container placeholder inserido no HTML
+  const section = document.getElementById('sabores');
+  if (!section) return;
 
-  const notification = document.createElement("div");
-  notification.className = "cart-notification";
-  notification.innerHTML = `
-    <span class="cart-notification__icon">✓</span>
-    <span class="cart-notification__text">${productName} adicionada ao carrinho!</span>
-  `;
+  // Monta o HTML da seção
+  section.innerHTML = `
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-eyebrow">Escolha o seu preferido</span>
+        <h2 class="section-title">Nossos <em>Sabores</em></h2>
+      </div>
 
-  document.body.appendChild(notification);
+      <!-- Tabs de navegação -->
+      <div class="sabores__tabs" role="tablist" aria-label="Sabores disponíveis">
+        ${SABORES.map((s, i) => `
+          <button
+            class="sabores__tab${i === 0 ? ' sabores__tab--active' : ''}"
+            role="tab"
+            aria-selected="${i === 0}"
+            aria-controls="painel-${s.id}"
+            data-tab="${s.id}"
+          >
+            <span class="sabores__tab-emoji">${s.emoji}</span>
+            <span class="sabores__tab-nome">${s.nome}</span>
+          </button>
+        `).join('')}
+      </div>
 
-  // Animar entrada
-  setTimeout(() => notification.classList.add("show"), 10);
+      <!-- Painéis de conteúdo -->
+      <div class="sabores__paineis">
+        ${SABORES.map((s, i) => `
+          <div
+            class="sabores__painel${i === 0 ? ' sabores__painel--active' : ''}"
+            id="painel-${s.id}"
+            role="tabpanel"
+            data-painel="${s.id}"
+            style="--sabor-cor: ${s.cor}; --sabor-cor-clara: ${s.corClara};"
+          >
+            <div class="sabores__painel-visual">
+              <div class="sabores__painel-emoji-bg" style="background:${s.corClara};">
+                <span class="sabores__painel-emoji">${s.emoji}</span>
+              </div>
+              <div class="sabores__painel-badge">${s.nota}</div>
+            </div>
 
-  // Remover após 3 segundos
-  setTimeout(() => {
-    notification.classList.remove("show");
-    setTimeout(() => notification.remove(), 300);
-  }, 3000);
-}
-
-// Atualizar UI do carrinho
-function updateCartUI() {
-  const count = getCartCount();
-  const total = getCartTotal();
-
-  // Atualizar botão flutuante do carrinho
-  const cartBtn = document.getElementById("cartBtn");
-  if (cartBtn) {
-    const badge = cartBtn.querySelector(".cart-btn__badge");
-    if (badge) {
-      badge.textContent = count;
-      badge.style.display = count > 0 ? "flex" : "none";
-    }
-  }
-
-  // Atualizar badge no navbar (se existir)
-  const navBadge = document.getElementById("cartNavBadge");
-  if (navBadge) {
-    navBadge.textContent = count;
-    navBadge.style.display = count > 0 ? "flex" : "none";
-  }
-
-  // Atualizar modal do carrinho
-  const cartItems = document.getElementById("cartItems");
-  const cartTotal = document.getElementById("cartTotal");
-  const cartEmpty = document.getElementById("cartEmpty");
-  const checkoutBtn = document.getElementById("checkoutBtn");
-
-  if (cartItems && cartTotal && cartEmpty && checkoutBtn) {
-    if (cart.length === 0) {
-      cartEmpty.style.display = "block";
-      cartItems.innerHTML = "";
-      cartTotal.textContent = "R$ 0,00";
-      checkoutBtn.disabled = true;
-      checkoutBtn.classList.add("disabled");
-    } else {
-      cartEmpty.style.display = "none";
-      cartItems.innerHTML = cart.map(item => `
-        <div class="cart-item">
-          <div class="cart-item__info">
-            <span class="cart-item__emoji">${item.emoji}</span>
-            <div>
-              <h4 class="cart-item__name">${item.name}</h4>
-              <span class="cart-item__price">R$ ${item.price.toFixed(2).replace('.', ',')}</span>
+            <div class="sabores__painel-info">
+              <div class="sabores__painel-tags">
+                ${s.tags.map(t => `<span class="sabores__tag">${t}</span>`).join('')}
+              </div>
+              <h3 class="sabores__painel-nome">${s.nome}</h3>
+              <p class="sabores__painel-desc">${s.descricao}</p>
+              <div class="sabores__painel-footer">
+                <span class="sabores__painel-preco">R$ ${s.preco.toFixed(2).replace('.', ',')}</span>
+                <div class="sabores__qty-wrap">
+                  <button class="sabores__qty-btn" data-action="dec" data-id="${s.id}" aria-label="Diminuir quantidade">−</button>
+                  <span class="sabores__qty-val" id="qty-${s.id}">1</span>
+                  <button class="sabores__qty-btn" data-action="inc" data-id="${s.id}" aria-label="Aumentar quantidade">+</button>
+                </div>
+                <button class="btn btn--primary sabores__add-btn" data-id="${s.id}" data-nome="${s.nome}" data-preco="${s.preco}" aria-label="Adicionar ${s.nome} ao carrinho">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M6 2a1 1 0 0 0 0 2h1.22l.4 2H4a1 1 0 0 0-.98 1.2l2 9A1 1 0 0 0 6 17h12a1 1 0 0 0 .98-.8l2-9A1 1 0 0 0 20 6h-3.62l-.4-2H18a1 1 0 0 0 0-2H6zm2.82 4h6.36l.4 2H8.42l.4-2zM7.7 10h8.6l-1.56 7H9.26L7.7 10zM9 19a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+                  Adicionar ao Carrinho
+                </button>
+              </div>
             </div>
           </div>
-          <div class="cart-item__actions">
-            <button class="cart-item__btn" onclick="updateQuantity(${item.id}, -1)" aria-label="Diminuir">−</button>
-            <span class="cart-item__qty">${item.quantity}</span>
-            <button class="cart-item__btn" onclick="updateQuantity(${item.id}, 1)" aria-label="Aumentar">+</button>
-            <button class="cart-item__remove" onclick="removeFromCart(${item.id})" aria-label="Remover">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-      `).join("");
-      cartTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-      checkoutBtn.disabled = false;
-      checkoutBtn.classList.remove("disabled");
-    }
-  }
-}
-
-// Abrir/fechar modal do carrinho
-function toggleCart() {
-  const modal = document.getElementById("cartModal");
-  const overlay = document.getElementById("cartOverlay");
-  
-  if (modal && overlay) {
-    const isOpen = modal.classList.contains("open");
-    
-    if (isOpen) {
-      modal.classList.remove("open");
-      overlay.classList.remove("open");
-      document.body.classList.remove("no-scroll");
-    } else {
-      modal.classList.add("open");
-      overlay.classList.add("open");
-      document.body.classList.add("no-scroll");
-    }
-  }
-}
-
-// Finalizar pedido via WhatsApp
-function checkout() {
-  if (cart.length === 0) return;
-
-  const message = generateOrderMessage();
-  const { phone } = CONFIG.whatsapp;
-  const url = `https://wa.me/${phone}?text=${message}`;
-  
-  window.open(url, "_blank");
-}
-
-// Limpar carrinho
-function clearCart() {
-  cart = [];
-  saveCart();
-  updateCartUI();
-}
-
-// Inicializar carrinho
-loadCart();
-
-// ============================================================
-// RENDERIZAR PRODUTOS
-// ============================================================
-
-function renderProducts() {
-  const grid = document.getElementById("productsGrid");
-  if (!grid) return;
-
-  grid.innerHTML = PRODUCTS.map(product => `
-    <article class="product-card" data-animate>
-      <div class="product-card__header">
-        <span class="product-card__emoji">${product.emoji}</span>
-        ${product.badge ? `<span class="product-card__badge">${product.badge}</span>` : ''}
+        `).join('')}
       </div>
-      <h3 class="product-card__title">${product.name}</h3>
-      <p class="product-card__desc">${product.description}</p>
-      <div class="product-card__footer">
-        <span class="product-card__price">R$ ${product.price.toFixed(2).replace('.', ',')}</span>
-        <button class="product-card__btn" onclick="addToCart(${product.id})">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-          </svg>
-          Adicionar
-        </button>
-      </div>
-    </article>
-  `).join("");
-}
+    </div>
+  `;
 
-// Renderizar produtos ao carregar
-document.addEventListener("DOMContentLoaded", renderProducts);
+  // Eventos das tabs
+  const tabs    = section.querySelectorAll('.sabores__tab');
+  const paineis = section.querySelectorAll('.sabores__painel');
 
-// ============================================================
-// NAVBAR SCROLL
-// ============================================================
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const alvo = tab.dataset.tab;
 
-const navbar = document.getElementById("navbar");
+      tabs.forEach(t => { t.classList.remove('sabores__tab--active'); t.setAttribute('aria-selected', 'false'); });
+      paineis.forEach(p => p.classList.remove('sabores__painel--active'));
 
-window.addEventListener("scroll", () => {
-  if (window.scrollY > 40) {
-    navbar.classList.add("scrolled");
-  } else {
-    navbar.classList.remove("scrolled");
-  }
-});
-
-// ============================================================
-// MENU MOBILE
-// ============================================================
-
-const hamburgerBtn = document.getElementById("hamburgerBtn");
-const mobileMenu = document.getElementById("mobileMenu");
-const mobileLinks = document.querySelectorAll(".mobile-link");
-
-hamburgerBtn.addEventListener("click", () => {
-  hamburgerBtn.classList.toggle("active");
-  mobileMenu.classList.toggle("open");
-  document.body.classList.toggle("no-scroll");
-});
-
-mobileLinks.forEach(link => {
-  link.addEventListener("click", () => {
-    hamburgerBtn.classList.remove("active");
-    mobileMenu.classList.remove("open");
-    document.body.classList.remove("no-scroll");
-  });
-});
-
-// ============================================================
-// SCROLL REVEAL (IntersectionObserver)
-// ============================================================
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("in-view");
-      observer.unobserve(entry.target); // performance
-    }
-  });
-}, {
-  threshold: 0.15
-});
-
-document.querySelectorAll("[data-animate]").forEach(el => {
-  observer.observe(el);
-});
-
-// ============================================================
-// WHATSAPP LINK DINÂMICO
-// ============================================================
-
-function generateWhatsAppLink() {
-  const { phone, message } = CONFIG.whatsapp;
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-}
-
-// aplica em todos os botões
-document.querySelectorAll("#heroWhatsappBtn, #ctaWhatsappBtn, #whatsappFloat")
-  .forEach(btn => {
-    btn.href = generateWhatsAppLink();
-  });
-
-// ============================================================
-// BOTÃO WHATSAPP FLOAT (aparece depois de scroll)
-// ============================================================
-
-const whatsappFloat = document.getElementById("whatsappFloat");
-
-window.addEventListener("scroll", () => {
-  if (window.scrollY > 500) {
-    whatsappFloat.classList.add("visible");
-  } else {
-    whatsappFloat.classList.remove("visible");
-  }
-});
-
-// ============================================================
-// CARROSSEL DE DEPOIMENTOS
-// ============================================================
-
-const track = document.getElementById("testimonialsTrack");
-const prevBtn = document.getElementById("testimonialPrev");
-const nextBtn = document.getElementById("testimonialNext");
-const dotsContainer = document.getElementById("testimonialDots");
-
-const cards = document.querySelectorAll(".testimonial-card");
-
-let index = 0;
-
-// cálculo dinâmico (responsivo)
-function getVisibleCards() {
-  if (window.innerWidth >= 960) return 3;
-  if (window.innerWidth >= 640) return 2;
-  return 1;
-}
-
-// criar dots
-function createDots() {
-  dotsContainer.innerHTML = "";
-  const total = cards.length - getVisibleCards() + 1;
-
-  for (let i = 0; i < total; i++) {
-    const dot = document.createElement("button");
-    dot.classList.add("testimonials__dot");
-
-    if (i === 0) dot.classList.add("active");
-
-    dot.addEventListener("click", () => {
-      index = i;
-      updateCarousel();
+      tab.classList.add('sabores__tab--active');
+      tab.setAttribute('aria-selected', 'true');
+      section.querySelector(`[data-painel="${alvo}"]`).classList.add('sabores__painel--active');
     });
-
-    dotsContainer.appendChild(dot);
-  }
-}
-
-// atualizar posição
-function updateCarousel() {
-  const cardWidth = cards[0].offsetWidth + 24; // gap
-  track.style.transform = `translateX(-${index * cardWidth}px)`;
-
-  // atualizar dots
-  document.querySelectorAll(".testimonials__dot").forEach((dot, i) => {
-    dot.classList.toggle("active", i === index);
   });
 
-  // limites botões
-  const maxIndex = cards.length - getVisibleCards();
+  // Eventos de quantidade (+ / -)
+  section.addEventListener('click', e => {
+    const btn = e.target.closest('.sabores__qty-btn');
+    if (!btn) return;
+    const id      = btn.dataset.id;
+    const display = document.getElementById(`qty-${id}`);
+    let val = parseInt(display.textContent, 10);
+    if (btn.dataset.action === 'inc') val = Math.min(val + 1, 20);
+    if (btn.dataset.action === 'dec') val = Math.max(val - 1, 1);
+    display.textContent = val;
+  });
 
-  prevBtn.disabled = index === 0;
-  nextBtn.disabled = index >= maxIndex;
+  // Evento de "Adicionar ao Carrinho"
+  section.addEventListener('click', e => {
+    const btn = e.target.closest('.sabores__add-btn');
+    if (!btn) return;
+    const id    = btn.dataset.id;
+    const nome  = btn.dataset.nome;
+    const preco = parseFloat(btn.dataset.preco);
+    const qty   = parseInt(document.getElementById(`qty-${id}`).textContent, 10);
+    addToCart({ id, nome, preco, qty });
+    animateAddBtn(btn);
+  });
 }
 
-// botões
-prevBtn.addEventListener("click", () => {
-  index--;
-  updateCarousel();
-});
+/* ─────────────────────────────────────────────
+   CARRINHO — construção do sidebar
+───────────────────────────────────────────── */
+function buildCartSidebar() {
+  // Cria o overlay e o sidebar dinamicamente
+  const overlay = document.createElement('div');
+  overlay.className = 'cart-overlay';
+  overlay.id = 'cartOverlay';
 
-nextBtn.addEventListener("click", () => {
-  index++;
-  updateCarousel();
-});
+  const sidebar = document.createElement('aside');
+  sidebar.className = 'cart-sidebar';
+  sidebar.id = 'cartSidebar';
+  sidebar.setAttribute('aria-label', 'Carrinho de compras');
+  sidebar.innerHTML = `
+    <div class="cart-sidebar__header">
+      <h3 class="cart-sidebar__title">🛒 Seu Carrinho</h3>
+      <button class="cart-sidebar__close" id="cartCloseBtn" aria-label="Fechar carrinho">✕</button>
+    </div>
+    <div class="cart-sidebar__body" id="cartBody">
+      <!-- itens renderizados via JS -->
+    </div>
+    <div class="cart-sidebar__footer" id="cartFooter">
+      <!-- total e CTA renderizados via JS -->
+    </div>
+  `;
 
-// swipe mobile
-let startX = 0;
+  document.body.appendChild(overlay);
+  document.body.appendChild(sidebar);
 
-track.addEventListener("touchstart", (e) => {
-  startX = e.touches[0].clientX;
-});
+  // Fechar ao clicar no overlay ou no X
+  overlay.addEventListener('click', closeCart);
+  document.getElementById('cartCloseBtn').addEventListener('click', closeCart);
+}
 
-track.addEventListener("touchend", (e) => {
-  const endX = e.changedTouches[0].clientX;
-  const diff = startX - endX;
+function openCart() {
+  document.getElementById('cartSidebar').classList.add('open');
+  document.getElementById('cartOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderCart();
+}
 
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) {
-      nextBtn.click();
-    } else {
-      prevBtn.click();
+function closeCart() {
+  document.getElementById('cartSidebar').classList.remove('open');
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ─────────────────────────────────────────────
+   CARRINHO — lógica
+───────────────────────────────────────────── */
+function addToCart({ id, nome, preco, qty }) {
+  const existing = cart.find(i => i.id === id);
+  if (existing) {
+    existing.qty = Math.min(existing.qty + qty, 20);
+  } else {
+    cart.push({ id, nome, preco, qty });
+  }
+  saveCart();
+  updateCartBadge();
+  renderCart();
+  openCart();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(i => i.id !== id);
+  saveCart();
+  updateCartBadge();
+  renderCart();
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty = Math.max(1, Math.min(20, item.qty + delta));
+  saveCart();
+  updateCartBadge();
+  renderCart();
+}
+
+function updateCartBadge() {
+  const count = getCartCount();
+  document.querySelectorAll('.cart-badge').forEach(b => {
+    b.textContent = count;
+    b.style.display = count > 0 ? 'flex' : 'none';
+  });
+}
+
+function renderCart() {
+  const body   = document.getElementById('cartBody');
+  const footer = document.getElementById('cartFooter');
+  if (!body || !footer) return;
+
+  if (cart.length === 0) {
+    body.innerHTML = `
+      <div class="cart-empty">
+        <span class="cart-empty__icon">🫙</span>
+        <p>Seu carrinho está vazio.</p>
+        <small>Adicione algum sabor delicioso!</small>
+      </div>
+    `;
+    footer.innerHTML = '';
+    return;
+  }
+
+  // Itens
+  body.innerHTML = cart.map(item => `
+    <div class="cart-item" data-id="${item.id}">
+      <div class="cart-item__info">
+        <span class="cart-item__nome">${item.nome}</span>
+        <span class="cart-item__preco-unit">R$ ${item.preco.toFixed(2).replace('.', ',')} / un.</span>
+      </div>
+      <div class="cart-item__controls">
+        <button class="cart-qty-btn" data-action="dec" data-id="${item.id}" aria-label="Diminuir">−</button>
+        <span class="cart-qty-val">${item.qty}</span>
+        <button class="cart-qty-btn" data-action="inc" data-id="${item.id}" aria-label="Aumentar">+</button>
+        <button class="cart-remove-btn" data-id="${item.id}" aria-label="Remover item">🗑</button>
+      </div>
+      <span class="cart-item__subtotal">R$ ${(item.preco * item.qty).toFixed(2).replace('.', ',')}</span>
+    </div>
+  `).join('');
+
+  // Total e botão de envio
+  const total = getCartTotal();
+  const msg   = buildWhatsappMsg();
+  footer.innerHTML = `
+    <div class="cart-total">
+      <span>Total</span>
+      <strong>R$ ${total.toFixed(2).replace('.', ',')}</strong>
+    </div>
+    <a href="${msg}" target="_blank" rel="noopener noreferrer" class="btn btn--primary cart-checkout-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.847L.057 23.857a.5.5 0 0 0 .609.61l6.098-1.598A11.947 11.947 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.944 9.944 0 0 1-5.176-1.452l-.371-.22-3.845 1.008 1.025-3.739-.242-.385A9.944 9.944 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+      Finalizar pelo WhatsApp
+    </a>
+    <button class="cart-clear-btn" id="cartClearBtn">Limpar carrinho</button>
+  `;
+
+  // Eventos dos itens
+  body.addEventListener('click', handleCartItemClick);
+  document.getElementById('cartClearBtn')?.addEventListener('click', () => {
+    cart = [];
+    saveCart();
+    updateCartBadge();
+    renderCart();
+  });
+}
+
+function handleCartItemClick(e) {
+  const qtyBtn    = e.target.closest('.cart-qty-btn');
+  const removeBtn = e.target.closest('.cart-remove-btn');
+
+  if (qtyBtn) {
+    const id     = qtyBtn.dataset.id;
+    const action = qtyBtn.dataset.action;
+    changeQty(id, action === 'inc' ? 1 : -1);
+  }
+
+  if (removeBtn) {
+    removeFromCart(removeBtn.dataset.id);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   WHATSAPP — monta mensagem com o carrinho
+───────────────────────────────────────────── */
+function buildWhatsappMsg() {
+  const number = '5561998647768';
+  let texto = 'Olá! Gostaria de fazer um pedido de geleias Doce Sabor 🍓\n\n*Meu pedido:*\n';
+
+  cart.forEach(item => {
+    texto += `• ${item.qty}x ${item.nome} — R$ ${(item.preco * item.qty).toFixed(2).replace('.', ',')}\n`;
+  });
+
+  texto += `\n*Total: R$ ${getCartTotal().toFixed(2).replace('.', ',')}*\n\nAguardo confirmação! 😊`;
+
+  return `https://wa.me/${number}?text=${encodeURIComponent(texto)}`;
+}
+
+/* ─────────────────────────────────────────────
+   BOTÃO CARRINHO NA NAVBAR
+───────────────────────────────────────────── */
+function injectCartButton() {
+  // Insere botão de carrinho na navbar (desktop e mobile)
+  const navLinks = document.querySelector('.navbar__links');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  if (navLinks) {
+    const cartBtn = document.createElement('button');
+    cartBtn.className = 'navbar__cart-btn';
+    cartBtn.setAttribute('aria-label', 'Abrir carrinho');
+    cartBtn.innerHTML = `
+      🛒
+      <span class="cart-badge" style="display:none;">0</span>
+    `;
+    cartBtn.addEventListener('click', openCart);
+    navLinks.insertBefore(cartBtn, navLinks.querySelector('.navbar__cta-btn'));
+  }
+
+  // Hamburguer também
+  if (mobileMenu) {
+    const cartBtnMobile = document.createElement('button');
+    cartBtnMobile.className = 'navbar__cart-btn navbar__cart-btn--mobile mobile-link';
+    cartBtnMobile.innerHTML = `🛒 Ver Carrinho <span class="cart-badge" style="display:none;">0</span>`;
+    cartBtnMobile.addEventListener('click', () => {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('hamburgerBtn').classList.remove('active');
+      document.body.style.overflow = '';
+      openCart();
+    });
+    mobileMenu.appendChild(cartBtnMobile);
+  }
+
+  // Botão flutuante carrinho (mobile)
+  const cartFloat = document.createElement('button');
+  cartFloat.className = 'cart-float';
+  cartFloat.id = 'cartFloat';
+  cartFloat.setAttribute('aria-label', 'Abrir carrinho');
+  cartFloat.innerHTML = `
+    🛒
+    <span class="cart-badge" style="display:none;">0</span>
+  `;
+  cartFloat.addEventListener('click', openCart);
+  document.body.appendChild(cartFloat);
+}
+
+/* ─────────────────────────────────────────────
+   FEEDBACK VISUAL — botão "Adicionar"
+───────────────────────────────────────────── */
+function animateAddBtn(btn) {
+  const original = btn.innerHTML;
+  btn.innerHTML = '✓ Adicionado!';
+  btn.style.background = '#27ae60';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.innerHTML = original;
+    btn.style.background = '';
+    btn.disabled = false;
+  }, 1600);
+}
+
+/* ─────────────────────────────────────────────
+   CARROSSEL DE DEPOIMENTOS
+───────────────────────────────────────────── */
+function initTestimonials() {
+  const track    = document.getElementById('testimonialsTrack');
+  const prevBtn  = document.getElementById('testimonialPrev');
+  const nextBtn  = document.getElementById('testimonialNext');
+  const dotsWrap = document.getElementById('testimonialDots');
+  if (!track) return;
+
+  const cards = track.querySelectorAll('.testimonial-card');
+  let current = 0;
+  let perView = getPerView();
+  let total   = Math.ceil(cards.length / perView);
+
+  // Cria dots
+  function buildDots() {
+    dotsWrap.innerHTML = '';
+    total = Math.ceil(cards.length / perView);
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('button');
+      dot.className = `testimonials__dot${i === 0 ? ' active' : ''}`;
+      dot.setAttribute('aria-label', `Depoimento ${i + 1}`);
+      dot.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(dot);
     }
   }
-});
 
-// resize handler
-window.addEventListener("resize", () => {
-  index = 0;
-  createDots();
-  updateCarousel();
-});
+  function getPerView() {
+    if (window.innerWidth >= 960) return 3;
+    if (window.innerWidth >= 640) return 2;
+    return 1;
+  }
 
-// init
-createDots();
-updateCarousel();
+  function goTo(index) {
+    current = Math.max(0, Math.min(index, total - 1));
+    const cardWidth = track.querySelector('.testimonial-card').offsetWidth + 24; // gap
+    track.style.transform = `translateX(-${current * perView * cardWidth}px)`;
+    dotsWrap.querySelectorAll('.testimonials__dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+  }
 
-// ============================================================
-// MELHORIA DE PERFORMANCE (throttle scroll)
-// ============================================================
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
 
-function throttle(fn, wait) {
-  let time = Date.now();
-  return function() {
-    if ((time + wait - Date.now()) < 0) {
-      fn();
-      time = Date.now();
+  // Auto-play
+  let autoplay = setInterval(() => goTo((current + 1) % total), 5000);
+  track.addEventListener('mouseenter', () => clearInterval(autoplay));
+  track.addEventListener('mouseleave', () => {
+    autoplay = setInterval(() => goTo((current + 1) % total), 5000);
+  });
+
+  // Swipe touch
+  let touchStartX = 0;
+  track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend', e => {
+    const delta = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(delta) > 50) goTo(delta > 0 ? current + 1 : current - 1);
+  });
+
+  // Recalcula ao redimensionar
+  window.addEventListener('resize', () => {
+    const newPer = getPerView();
+    if (newPer !== perView) {
+      perView = newPer;
+      current = 0;
+      buildDots();
+      goTo(0);
     }
-  };
+  }, { passive: true });
+
+  buildDots();
 }
 
-// aplica throttle no scroll pesado
-window.addEventListener("scroll", throttle(() => {
-  // já usado para float + navbar
-}, 100));
+/* ─────────────────────────────────────────────
+   ANIMAÇÕES DE ENTRADA (IntersectionObserver)
+───────────────────────────────────────────── */
+function initScrollAnimations() {
+  const elements = document.querySelectorAll('[data-animate]');
+  if (!elements.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  elements.forEach(el => observer.observe(el));
+}
+
+/* ─────────────────────────────────────────────
+   BOTÃO FLUTUANTE WHATSAPP
+───────────────────────────────────────────── */
+function initWhatsappFloat() {
+  const floatBtn = document.getElementById('whatsappFloat');
+  if (!floatBtn) return;
+
+  window.addEventListener('scroll', () => {
+    floatBtn.classList.toggle('visible', window.scrollY > 300);
+  }, { passive: true });
+}
+
+/* ─────────────────────────────────────────────
+   LINKS WHATSAPP — atualiza com mensagem do carrinho
+───────────────────────────────────────────── */
+function updateWhatsappLinks() {
+  // Os botões CTA fixos apontam para msg genérica; só o checkout usa o carrinho
+  // Se quiser, pode estender aqui para sincronizar outros botões também
+}
+
+/* ─────────────────────────────────────────────
+   INIT GERAL
+───────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  initNavbar();
+  buildSaboresSection();   // Constrói seção de sabores dinamicamente
+  buildCartSidebar();      // Cria sidebar do carrinho no DOM
+  injectCartButton();      // Injeta botão de carrinho na navbar
+  updateCartBadge();       // Sincroniza badge com localStorage
+  initTestimonials();
+  initScrollAnimations();
+  initWhatsappFloat();
+  updateWhatsappLinks();
+});
