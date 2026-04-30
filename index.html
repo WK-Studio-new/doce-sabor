@@ -11,12 +11,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Lato:wght@300;400;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
 
   <!-- Folha de estilos externa -->
-  <link rel="stylesheet" href="style.css?v=20260429" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <!-- ============================================================
-       HEADER / NAVBAR (inclui botão carrinho)
+       HEADER / NAVBAR
   ============================================================ -->
   <header class="navbar" id="navbar">
     <div class="navbar__inner">
@@ -28,13 +28,6 @@
         <a href="#beneficios">Benefícios</a>
         <a href="#sobre">Sobre</a>
         <a href="#depoimentos">Depoimentos</a>
-        <button class="navbar__cart-btn" id="cartBtn" aria-label="Abrir carrinho">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
-            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-          </svg>
-          <span class="cart-btn__badge" id="cartNavBadge" style="display: none;">0</span>
-        </button>
         <a href="#cta" class="navbar__cta-btn">Pedir Agora</a>
       </nav>
       <!-- Hamburguer mobile -->
@@ -393,22 +386,7 @@
     </section>
 
     <!-- ============================================================
-         SEÇÃO 6 — NOSSOS PRODUTOS
-    ============================================================ -->
-    <section class="products" id="produtos">
-      <div class="section-container">
-        <div class="section-header">
-          <span class="section-eyebrow">Sabores disponíveis</span>
-          <h2 class="section-title">Nossas Geleias<br/><em>artesanais</em></h2>
-        </div>
-        <div class="products__grid" id="productsGrid">
-          <!-- Produtos inseridos via JavaScript -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         SEÇÃO 8 — DIFERENCIAL
+         SEÇÃO 6 — DIFERENCIAL
     ============================================================ -->
     <section class="brand-quote" id="diferencial">
       <div class="brand-quote__inner">
@@ -423,7 +401,7 @@
     </section>
 
     <!-- ============================================================
-         SEÇÃO 9 — CTA FINAL
+         SEÇÃO 7 — CTA FINAL
     ============================================================ -->
     <section class="cta-section" id="cta">
       <div class="cta-section__inner">
@@ -467,16 +445,6 @@
     </div>
   </footer>
 
-  <!-- Botão flutuante do Carrinho -->
-  <button class="cart-float" id="cartFloatBtn" aria-label="Abrir carrinho" onclick="toggleCart()">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
-      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-      <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-    </svg>
-    <span class="cart-float__badge" id="cartFloatBadge" style="display: none;">0</span>
-    <span class="cart-float__tooltip">Meu Carrinho</span>
-  </button>
-
   <!-- Botão flutuante WhatsApp -->
   <a href="https://wa.me/5561998647768?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido%20de%20geleias%20artesanais%20Doce%20Sabor%20%F0%9F%8D%93"
      target="_blank"
@@ -487,44 +455,6 @@
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="30" height="30"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.847L.057 23.857a.5.5 0 0 0 .609.61l6.098-1.598A11.947 11.947 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.944 9.944 0 0 1-5.176-1.452l-.371-.22-3.845 1.008 1.025-3.739-.242-.385A9.944 9.944 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
     <span class="whatsapp-float__tooltip">Fale conosco!</span>
   </a>
-
-  <!-- Overlay do Carrinho -->
-  <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
-
-  <!-- Modal do Carrinho -->
-  <div class="cart-modal" id="cartModal">
-    <div class="cart-modal__header">
-      <h3>🛒 Meu Carrinho</h3>
-      <button class="cart-modal__close" onclick="toggleCart()" aria-label="Fechar carrinho">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <div class="cart-modal__body">
-      <div class="cart-empty" id="cartEmpty">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64">
-          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-        </svg>
-        <p>Seu carrinho está vazio 😢</p>
-        <span>Adicione nossas deliciosas geleias!</span>
-      </div>
-      <div class="cart-items" id="cartItems"></div>
-    </div>
-    <div class="cart-modal__footer">
-      <div class="cart-total">
-        <span>Total:</span>
-        <span class="cart-total__value" id="cartTotal">R$ 0,00</span>
-      </div>
-      <button class="cart-checkout" id="checkoutBtn" onclick="checkout()" disabled>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-        </svg>
-        Finalizar Pedido
-      </button>
-    </div>
-  </div>
 
   <!-- Script externo -->
   <script src="script.js"></script>
